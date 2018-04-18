@@ -1,12 +1,14 @@
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
 
-public class MouseControl implements MouseListener,MouseMotionListener {
+public class MouseControl implements MouseListener,MouseMotionListener,MouseWheelListener {
     Handler handler;
+    Game game;
 
-    public MouseControl(Handler handler) {
+    public MouseControl(Handler handler,Game game) {
         this.handler = handler;
+        this.game = game;
     }
 
     @Override
@@ -42,5 +44,16 @@ public class MouseControl implements MouseListener,MouseMotionListener {
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+
+        if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+            double scale = game.getScale();
+            scale -= (0.1 * e.getWheelRotation());
+            scale = Math.max(0.1, scale);
+            game.setScale(scale);
+        }
     }
 }
