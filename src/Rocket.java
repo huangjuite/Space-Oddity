@@ -1,17 +1,19 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class Rocket extends GameObject {
 
     Handler handler;
     Image image;
-
+    BufferedImage bufferedImage;
     public Rocket(int x, int y, ID id,Handler handler) {
         super(x, y, id);
         this.handler = handler;
         try {
             image = ImageIO.read(new File("rocket.png"));
+            bufferedImage = ImageIO.read(new File("rocket.png"));
         }
         catch (IOException e){
             e.printStackTrace();
@@ -40,6 +42,6 @@ public class Rocket extends GameObject {
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(image,x,y,null);
+        g.drawImage(image,x-bufferedImage.getWidth()/2,y-bufferedImage.getHeight()/2,null);
     }
 }
