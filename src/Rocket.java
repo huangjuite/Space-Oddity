@@ -29,7 +29,7 @@ public class Rocket extends GameObject {
     public void collision(){
         for(GameObject tempObject:handler.objects){
             if(tempObject.getId()==ID.Planet){
-
+                System.out.println("collision");
             }
         }
     }
