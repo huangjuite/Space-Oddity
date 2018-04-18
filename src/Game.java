@@ -3,13 +3,17 @@ import java.awt.image.BufferStrategy;
 
 public class Game extends Canvas implements Runnable {
 
-    public static final int WIDTH = 640,HEIGHT = WIDTH/12*9;
-
+    public static final int WIDTH = 1080,HEIGHT = WIDTH/12*9;
     private Thread thread;
     private boolean running=false;
+    private Handler handler;
 
     public Game(){
+        handler = new Handler();
+        this.addKeyListener(new KeyInput(handler));
         new Window(WIDTH,HEIGHT,"Space Oddity",this);
+
+        handler.addObject(new Rocket(WIDTH/2-16,HEIGHT/2-16,ID.Rocket,handler));
     }
 
     public synchronized void start(){
@@ -59,7 +63,7 @@ public class Game extends Canvas implements Runnable {
     }
 
     public void tick(){
-
+        handler.tick();
     }
 
     public void render(){
@@ -73,8 +77,9 @@ public class Game extends Canvas implements Runnable {
 
         g.setColor(Color.gray);
         g.fillRect(0,0,WIDTH,HEIGHT);
-        g.dispose();
+        handler.render(g);
 
+        g.dispose();
         bs.show();
     }
 

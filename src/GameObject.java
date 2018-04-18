@@ -1,11 +1,11 @@
-import java.awt.Graphics;
+import java.awt.*;
 
 public abstract class GameObject {
     protected int x;
     protected int y;
     protected ID id;
-    protected int volx;
-    protected int voly;
+    protected double volx;
+    protected double voly;
 
     public GameObject(int x,int y,ID id){
         this.x = x;
@@ -25,11 +25,11 @@ public abstract class GameObject {
         this.id = id;
     }
 
-    public void setVolx(int volx) {
+    public void setVolx(double volx) {
         this.volx = volx;
     }
 
-    public void setVoly(int voly) {
+    public void setVoly(double voly) {
         this.voly = voly;
     }
 
@@ -45,13 +45,14 @@ public abstract class GameObject {
         return id;
     }
 
-    public int getVolx() {
+    public double getVolx() {
         return volx;
     }
 
-    public int getVoly() {
+    public double getVoly() {
         return voly;
     }
     public abstract void tick();
     public abstract void render(Graphics g);
+    public abstract Rectangle getBounds();
 }
