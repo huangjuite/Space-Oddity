@@ -1,5 +1,6 @@
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.security.Key;
 
 public class KeyInput extends KeyAdapter {
     Handler handler;
@@ -15,13 +16,48 @@ public class KeyInput extends KeyAdapter {
         for(GameObject tempObject:handler.objects){
             if(tempObject.getId()==ID.Rocket){
                 if(key== KeyEvent.VK_UP){
-                    tempObject.setVoly(tempObject.getVoly()+1);
+                    double vx = tempObject.getVolx();
+                    double vy = tempObject.getVoly();
+                    double value = Math.sqrt(vx*vx+vy*vy)+1;
+                    double ra = Math.toRadians(tempObject.getDegree()-90);
+                    tempObject.setVoly(value*Math.sin(ra));
+                    tempObject.setVolx(value*Math.cos(ra));
                 }
 
                 if(key== KeyEvent.VK_DOWN){
-                    tempObject.setVoly(tempObject.getVoly()-1);
+                    double vx = tempObject.getVolx();
+                    double vy = tempObject.getVoly();
+                    double value = Math.sqrt(vx*vx+vy*vy)-1;
+                    if(value>0) {
+                        double ra = Math.toRadians(tempObject.getDegree()-90);
+                        tempObject.setVoly(value * Math.sin(ra));
+                        tempObject.setVolx(value * Math.cos(ra));
+                    }
+                    else{
+                        tempObject.setVolx(0);
+                        tempObject.setVoly(0);
+                    }
                 }
 
+                if(key==KeyEvent.VK_LEFT){
+                    tempObject.setOmega(tempObject.getOmega()-0.5);
+                    double vx = tempObject.getVolx();
+                    double vy = tempObject.getVoly();
+                    double value = Math.sqrt(vx*vx+vy*vy);
+                    double ra = Math.toRadians(tempObject.getDegree()-90);
+                    tempObject.setVoly(value*Math.sin(ra));
+                    tempObject.setVolx(value*Math.cos(ra));
+                }
+
+                if(key==KeyEvent.VK_RIGHT){
+                    tempObject.setOmega(tempObject.getOmega()+0.5);
+                    double vx = tempObject.getVolx();
+                    double vy = tempObject.getVoly();
+                    double value = Math.sqrt(vx*vx+vy*vy);
+                    double ra = Math.toRadians(tempObject.getDegree()-90);
+                    tempObject.setVoly(value*Math.sin(ra));
+                    tempObject.setVolx(value*Math.cos(ra));
+                }
             }
         }
 

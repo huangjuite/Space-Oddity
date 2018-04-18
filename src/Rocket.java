@@ -1,18 +1,17 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class Rocket extends GameObject {
 
     Handler handler;
-    Image image;
     BufferedImage bufferedImage;
     public Rocket(int x, int y, ID id,Handler handler) {
         super(x, y, id);
         this.handler = handler;
         try {
-            image = ImageIO.read(new File("rocket.png"));
             bufferedImage = ImageIO.read(new File("rocket.png"));
         }
         catch (IOException e){
@@ -38,10 +37,14 @@ public class Rocket extends GameObject {
     public void tick() {
         x+=volx;
         y+=voly;
+        degree+=omega;
     }
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(image,x-bufferedImage.getWidth()/2,y-bufferedImage.getHeight()/2,null);
+        AffineTransform at = AffineTransform.getTranslateInstance(x-bufferedImage.getWidth()/2,y-bufferedImage.getHeight()/2);
+        at.rotate(Math.toRadians(degree),bufferedImage.getWidth()/2,bufferedImage.getHeight()/2);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.drawImage(bufferedImage,at,null);
     }
 }

@@ -3,6 +3,8 @@ import java.awt.*;
 public abstract class GameObject {
     protected int x;
     protected int y;
+    protected double degree=0;
+    protected double omega=0;
     protected ID id;
     protected double volx;
     protected double voly;
@@ -52,6 +54,23 @@ public abstract class GameObject {
     public double getVoly() {
         return voly;
     }
+
+    public double getDegree() {
+        return degree;
+    }
+
+    public void setDegree(double degree) {
+        this.degree = degree;
+    }
+
+    public double getOmega() {
+        return omega;
+    }
+
+    public void setOmega(double omega) {
+        this.omega = omega;
+    }
+
     public abstract void tick();
     public abstract void render(Graphics g);
     public abstract Rectangle getBounds();
