@@ -11,9 +11,12 @@ public class Game extends Canvas implements Runnable {
     public Game(){
         handler = new Handler();
         this.addKeyListener(new KeyInput(handler));
+        MouseControl msc = new MouseControl(handler);
+        this.addMouseListener(msc);
+        this.addMouseMotionListener(msc);
         new Window(WIDTH,HEIGHT,"Space Oddity",this);
-
         handler.addObject(new Rocket(WIDTH/2-16,HEIGHT/2-16,ID.Rocket,handler));
+        handler.addObject(new Planet(150,150,ID.Planet,handler));
     }
 
     public synchronized void start(){
