@@ -60,7 +60,6 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
             }
             scale=(scale>2)?2:scale;
             scale=(scale<0.05)?0.05:scale;
-            System.out.println(scale);
             game.setScale(scale);
         }
     }
