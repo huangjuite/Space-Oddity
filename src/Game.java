@@ -16,7 +16,6 @@ public class Game extends Canvas implements Runnable {
     public Game(){
         translateCord = new Point(WIDTH/2,HEIGHT/2);
         at = new AffineTransform();
-        //at.setToTranslation(translateCord.getX(),translateCord.getY());
         scale = 1;
         handler = new Handler();
         this.addKeyListener(new KeyInput(handler,this));

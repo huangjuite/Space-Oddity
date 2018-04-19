@@ -61,27 +61,36 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
             double magnitude = 1.05;
             if(e.getWheelRotation()>0){
                 scale*=magnitude;
-                zoom(e.getPoint(),magnitude);
+                zoom(e.getPoint());
             }
             else if(e.getWheelRotation()<0){
                 scale*=1/magnitude;
-                zoom(e.getPoint(),1/magnitude);
+                zoom(e.getPoint());
             }
             if(scale>2){
                 scale=2;
-                zoom(e.getPoint(),1/magnitude);
+                zoom(e.getPoint());
             }
             else if(scale<0.1){
                 scale=0.1;
-                zoom(e.getPoint(),magnitude);
+                zoom(e.getPoint());
             }
             game.setScale(scale);
         }
     }
 
-    public void zoom(Point e,double magnitude){
-        game.getAt().translate(e.getX(),e.getY());
-        game.getAt().scale(magnitude,magnitude);
-        game.getAt().translate(-e.getX(),-e.getY());
+    public void zoom(Point e){
+        AffineTransform at = game.getAt();
+        Point2D p1 = e;
+        Point2D p2 = null;
+        try {
+            p2 = at.inverseTransform(p1,null);
+        } catch (NoninvertibleTransformException e1) {
+            e1.printStackTrace();
+        }
+        at.setToIdentity();
+        at.translate(p1.getX(),p1.getY());
+        at.scale(game.getScale(),game.getScale());
+        at.translate(-p2.getX(),-p2.getY());
     }
 }
