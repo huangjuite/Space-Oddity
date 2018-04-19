@@ -31,10 +31,11 @@ public class Planet extends GameObject {
     }
 
     @Override
-    public void render(Graphics g) {
+    public void render(Graphics g,AffineTransform at) {
         AffineTransform newat = AffineTransform.getTranslateInstance(x-bufferedImage.getWidth()/2,y-bufferedImage.getHeight()/2);
         newat.rotate(Math.toRadians(degree),bufferedImage.getWidth()/2,bufferedImage.getHeight()/2);
         Graphics2D g2d = (Graphics2D) g;
+        newat.preConcatenate(at);
         g2d.drawImage(bufferedImage,newat,null);
     }
 }

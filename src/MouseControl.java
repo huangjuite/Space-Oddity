@@ -51,8 +51,16 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
 
         if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
             double scale = game.getScale();
-            scale -= (0.1 * e.getWheelRotation());
-            scale = Math.max(0.1, scale);
+
+            if(e.getWheelRotation()>0){
+                scale+=0.01;
+            }
+            else if(e.getWheelRotation()<0){
+                scale-=0.01;
+            }
+            scale=(scale>2)?2:scale;
+            scale=(scale<0.05)?0.05:scale;
+            System.out.println(scale);
             game.setScale(scale);
         }
     }

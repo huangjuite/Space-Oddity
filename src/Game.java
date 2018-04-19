@@ -11,10 +11,12 @@ public class Game extends Canvas implements Runnable {
     private Handler handler;
     private Point translateCord;
     private double scale;
-
+    AffineTransform at;
 
     public Game(){
         translateCord = new Point(WIDTH/2,HEIGHT/2);
+        at = new AffineTransform();
+        //at.setToTranslation(translateCord.getX(),translateCord.getY());
         scale = 1;
         handler = new Handler();
         this.addKeyListener(new KeyInput(handler));
@@ -97,27 +99,10 @@ public class Game extends Canvas implements Runnable {
         }
 
         Graphics g = bs.getDrawGraphics();
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.scale(scale,scale);
-        double width = getWidth();
-        double height = getHeight();
-
-        double zoomWidth = width * scale;
-        double zoomHeight = height * scale;
-
-        double anchorx = (width - zoomWidth) / 2;
-        double anchory = (height - zoomHeight) / 2;
-
-        AffineTransform at = new AffineTransform();
-        at.translate(anchorx, anchory);
-        at.scale(scale, scale);
-        at.translate(-anchorx, -anchory);
-
-        g2d.setTransform(at);
+        at.setToScale(scale,scale);
         g.setColor(Color.gray);
         g.fillRect(0,0,WIDTH,HEIGHT);
-        handler.render(g);
-
+        handler.render(g,at);
 
         g.dispose();
         bs.show();

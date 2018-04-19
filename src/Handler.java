@@ -11,9 +11,9 @@ public class Handler {
         }
     }
 
-    public void render(Graphics g){
+    public void render(Graphics g,AffineTransform at){
         for(GameObject tempObject : objects){
-            tempObject.render(g);
+            tempObject.render(g,at);
         }
     }
 
