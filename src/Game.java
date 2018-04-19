@@ -19,13 +19,13 @@ public class Game extends Canvas implements Runnable {
         //at.setToTranslation(translateCord.getX(),translateCord.getY());
         scale = 1;
         handler = new Handler();
-        this.addKeyListener(new KeyInput(handler));
+        this.addKeyListener(new KeyInput(handler,this));
         MouseControl msc = new MouseControl(handler,this);
         this.addMouseListener(msc);
         this.addMouseMotionListener(msc);
         this.addMouseWheelListener(msc);
         handler.addObject(new Rocket(WIDTH/2-16,HEIGHT/2-16,ID.Rocket,handler));
-        handler.addObject(new Planet(150,150,ID.Planet,handler));
+        handler.addObject(new Planet(-150,-150,ID.Planet,handler));
         new Window(WIDTH,HEIGHT,"Space Oddity",this);
     }
 
@@ -39,6 +39,10 @@ public class Game extends Canvas implements Runnable {
 
     public void setScale(double scale) {
         this.scale = scale;
+    }
+
+    public AffineTransform getAt() {
+        return at;
     }
 
     public synchronized void start(){
@@ -99,7 +103,6 @@ public class Game extends Canvas implements Runnable {
         }
 
         Graphics g = bs.getDrawGraphics();
-        at.setToScale(scale,scale);
         g.setColor(Color.gray);
         g.fillRect(0,0,WIDTH,HEIGHT);
         handler.render(g,at);
