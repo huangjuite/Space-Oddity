@@ -14,7 +14,7 @@ public class Planet extends GameObject {
         this.handler = handler;
         omega=0.5;
         try {
-            bufferedImage = ImageIO.read(new File("jupiter-planet.png"));
+            bufferedImage = ImageIO.read(getClass().getResource("jupiter-planet.png"));
         }catch (IOException e){
             e.printStackTrace();
         }

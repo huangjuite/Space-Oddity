@@ -12,7 +12,7 @@ public class Rocket extends GameObject {
         super(x, y, id);
         this.handler = handler;
         try {
-            bufferedImage = ImageIO.read(new File("rocket.png"));
+            bufferedImage = ImageIO.read(getClass().getResource("rocket.png"));
         }
         catch (IOException e){
             e.printStackTrace();

@@ -11,7 +11,7 @@ public class Game extends Canvas implements Runnable {
     private Handler handler;
     private Point translateCord;
     private double scale;
-    AffineTransform at;
+    private AffineTransform at;
 
     public Game(){
         translateCord = new Point(WIDTH/2,HEIGHT/2);
