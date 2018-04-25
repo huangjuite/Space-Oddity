@@ -7,6 +7,7 @@ public class Handler {
 
     public void tick(){
         for(GameObject tempObject : objects){
+
             tempObject.tick();
         }
     }

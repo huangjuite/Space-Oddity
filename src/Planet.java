@@ -8,13 +8,43 @@ import java.io.IOException;
 public class Planet extends GameObject {
     Handler handler;
     BufferedImage bufferedImage;
+    public enum planetType{JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN}
+    private planetType type;
 
-    public Planet(int x, int y, ID id, Handler handler) {
+    public Planet(int x, int y, ID id,planetType type, Handler handler) {
         super(x, y, id);
         this.handler = handler;
+        this.type = type;
+        String typeName="jupiter.png";
+        switch (type){
+            case JUPITER:
+                typeName = "jupiter.png";
+                break;
+            case MARS:
+                typeName = "mars.png";
+                break;
+            case MOON:
+                typeName = "moon.png";
+                break;
+            case EARTH:
+                typeName = "earth.png";
+                break;
+            case VENUS:
+                typeName = "venus.png";
+                break;
+            case MERCURY:
+                typeName = "mercury.png";
+                break;
+            case SATURN:
+                typeName = "saturn.png";
+                break;
+            case NEPTUNE:
+                typeName = "neptune.png";
+                break;
+        }
         omega=0.5;
         try {
-            bufferedImage = ImageIO.read(getClass().getResource("jupiter-planet.png"));
+            bufferedImage = ImageIO.read(getClass().getResource(typeName));
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -27,6 +57,8 @@ public class Planet extends GameObject {
 
     @Override
     public void tick() {
+        x+=volx;
+        y+=voly;
         degree+=omega;
     }
 

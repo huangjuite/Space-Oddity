@@ -24,7 +24,10 @@ public class Game extends Canvas implements Runnable {
         this.addMouseMotionListener(msc);
         this.addMouseWheelListener(msc);
         handler.addObject(new Rocket(WIDTH/2-16,HEIGHT/2-16,ID.Rocket,handler));
-        handler.addObject(new Planet(-150,-150,ID.Planet,handler));
+        handler.addObject(new Planet(-150,-150,ID.Planet, Planet.planetType.JUPITER,handler));
+        handler.addObject(new Planet(150,150,ID.Planet, Planet.planetType.MARS,handler));
+        handler.addObject(new Planet(1000,1000,ID.Planet, Planet.planetType.EARTH,handler));
+        handler.addObject(new Planet(1500,1500,ID.Planet, Planet.planetType.MOON,handler));
         new Window(WIDTH,HEIGHT,"Space Oddity",this);
     }
 
@@ -68,6 +71,7 @@ public class Game extends Canvas implements Runnable {
         double delta = 0;
         long timer = System.currentTimeMillis();
         int frames = 0;
+        int sleepTime = 16;
         while(running){
             long now = System.nanoTime();
             delta += (now-lastTime) / ns;
@@ -84,7 +88,18 @@ public class Game extends Canvas implements Runnable {
             if(System.currentTimeMillis()-timer > 1000){
                 timer += 1000;
                 System.out.println("FPS:"+frames);
+                if(frames>=60){
+                    sleepTime++;
+                }
+                else{
+                    sleepTime--;
+                }
                 frames = 0;
+            }
+            try{
+                thread.sleep(sleepTime);
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
         stop();
