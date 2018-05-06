@@ -1,35 +1,34 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class Rocket extends GameObject {
+    BufferedImage boostImage;
+    BufferedImage noboostImage;
+    public enum BoostSide{FRONT,BACK,RIGHT,LEFT,OFF}
+    public BoostSide boostSide = BoostSide.OFF;
 
-    Handler handler;
-    BufferedImage bufferedImage;
     public Rocket(int x, int y, ID id,Handler handler) {
-        super(x, y, id);
-        this.handler = handler;
+        super(x, y, id,handler);
         try {
-            bufferedImage = ImageIO.read(getClass().getResource("rocket.png"));
+            noboostImage = ImageIO.read(getClass().getResource("rocket.png"));
+            boostImage = ImageIO.read(getClass().getResource("rocketBoost.png"));
+            bufferedImage = noboostImage;
         }
         catch (IOException e){
             e.printStackTrace();
         }
     }
 
-    @Override
-    public Rectangle getBounds(){
-
-        return new Rectangle(x,y,32,32);
-    }
-
-    public void collision(){
-        for(GameObject tempObject:handler.objects){
-            if(tempObject.getId()==ID.Planet){
-                System.out.println("collision");
-            }
+    public void setBoostImage(boolean b){
+        if(b){
+            bufferedImage=boostImage;
+        }
+        else{
+            bufferedImage=noboostImage;
         }
     }
 
@@ -38,6 +37,7 @@ public class Rocket extends GameObject {
         x+=volx;
         y+=voly;
         degree+=omega;
+
     }
 
     @Override

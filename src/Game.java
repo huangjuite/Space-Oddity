@@ -16,6 +16,7 @@ public class Game extends Canvas implements Runnable {
     public Game(){
         translateCord = new Point(WIDTH/2,HEIGHT/2);
         at = new AffineTransform();
+        at.setToTranslation(WIDTH/2,HEIGHT/2);
         scale = 1;
         handler = new Handler();
         this.addKeyListener(new KeyInput(handler,this));
@@ -23,11 +24,11 @@ public class Game extends Canvas implements Runnable {
         this.addMouseListener(msc);
         this.addMouseMotionListener(msc);
         this.addMouseWheelListener(msc);
-        handler.addObject(new Rocket(WIDTH/2-16,HEIGHT/2-16,ID.Rocket,handler));
-        handler.addObject(new Planet(-150,-150,ID.Planet, Planet.planetType.JUPITER,handler));
-        handler.addObject(new Planet(150,150,ID.Planet, Planet.planetType.MARS,handler));
+        handler.addObject(new Rocket(0,0,ID.Rocket,handler));
+        //handler.addObject(new Planet(-150,-150,ID.Planet, Planet.planetType.JUPITER,handler));
+        //handler.addObject(new Planet(150,150,ID.Planet, Planet.planetType.MARS,handler));
         handler.addObject(new Planet(1000,1000,ID.Planet, Planet.planetType.EARTH,handler));
-        handler.addObject(new Planet(1500,1500,ID.Planet, Planet.planetType.MOON,handler));
+        //handler.addObject(new Planet(0,0,ID.Planet, Planet.planetType.MOON,handler));
         new Window(WIDTH,HEIGHT,"Space Oddity",this);
     }
 
@@ -88,6 +89,7 @@ public class Game extends Canvas implements Runnable {
             if(System.currentTimeMillis()-timer > 1000){
                 timer += 1000;
                 System.out.println("FPS:"+frames);
+                System.out.println("SleepTime:"+sleepTime);
                 if(frames>=60){
                     sleepTime++;
                 }

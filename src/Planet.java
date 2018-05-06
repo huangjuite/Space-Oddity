@@ -6,14 +6,11 @@ import java.io.File;
 import java.io.IOException;
 
 public class Planet extends GameObject {
-    Handler handler;
-    BufferedImage bufferedImage;
     public enum planetType{JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN}
     private planetType type;
 
     public Planet(int x, int y, ID id,planetType type, Handler handler) {
-        super(x, y, id);
-        this.handler = handler;
+        super(x, y, id,handler);
         this.type = type;
         String typeName="jupiter.png";
         switch (type){
@@ -50,10 +47,6 @@ public class Planet extends GameObject {
         }
     }
 
-    @Override
-    public Rectangle getBounds() {
-        return null;
-    }
 
     @Override
     public void tick() {

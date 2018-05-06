@@ -19,25 +19,24 @@ public class KeyInput extends KeyAdapter {
             game.getAt().setToTranslation(game.getTranslateCord().getX(),game.getTranslateCord().getY());
         }
 
-        if(key== KeyEvent.VK_UP){
-            for(GameObject tempObject:handler.objects) {
-                if (tempObject.getId() == ID.Rocket) {
-                    double vx = tempObject.getVolx();
-                    double vy = tempObject.getVoly();
-                    double value = Math.sqrt(vx * vx + vy * vy) + 1;
-                    double ra = Math.toRadians(tempObject.getDegree() - 90);
-                    tempObject.setVoly(value * Math.sin(ra));
-                    tempObject.setVolx(value * Math.cos(ra));
-                }
-            }
-        }
+        for(GameObject tempObject:handler.objects) {
+            if (tempObject.getId() == ID.Rocket){
+                Rocket rocket = (Rocket)tempObject;
 
-        if(key== KeyEvent.VK_DOWN){
-            for(GameObject tempObject:handler.objects) {
-                if (tempObject.getId() == ID.Rocket) {
+                if(key== KeyEvent.VK_UP){
+                    rocket.setBoostImage(true);
+                    double vx = rocket.getVolx();
+                    double vy = rocket.getVoly();
+                    double value = Math.sqrt(vx * vx + vy * vy) + 0.1;
+                    double ra = Math.toRadians(rocket.getDegree() - 90);
+                    rocket.setVoly(value * Math.sin(ra));
+                    rocket.setVolx(value * Math.cos(ra));
+                }
+
+                if(key== KeyEvent.VK_DOWN){
                     double vx = tempObject.getVolx();
                     double vy = tempObject.getVoly();
-                    double value = Math.sqrt(vx * vx + vy * vy) - 1;
+                    double value = Math.sqrt(vx * vx + vy * vy) - 0.1;
                     if (value > 0) {
                         double ra = Math.toRadians(tempObject.getDegree() - 90);
                         tempObject.setVoly(value * Math.sin(ra));
@@ -47,33 +46,15 @@ public class KeyInput extends KeyAdapter {
                         tempObject.setVoly(0);
                     }
                 }
-            }
-        }
 
-        if(key==KeyEvent.VK_LEFT){
-            for(GameObject tempObject:handler.objects) {
-                if (tempObject.getId() == ID.Rocket) {
+                if(key==KeyEvent.VK_LEFT){
                     tempObject.setOmega(tempObject.getOmega() - 0.5);
-                    double vx = tempObject.getVolx();
-                    double vy = tempObject.getVoly();
-                    double value = Math.sqrt(vx * vx + vy * vy);
-                    double ra = Math.toRadians(tempObject.getDegree() - 90);
-                    tempObject.setVoly(value * Math.sin(ra));
-                    tempObject.setVolx(value * Math.cos(ra));
-                }
-            }
-        }
 
-        if(key==KeyEvent.VK_RIGHT) {
-            for (GameObject tempObject : handler.objects) {
-                if (tempObject.getId() == ID.Rocket) {
+                }
+
+                if(key==KeyEvent.VK_RIGHT) {
                     tempObject.setOmega(tempObject.getOmega() + 0.5);
-                    double vx = tempObject.getVolx();
-                    double vy = tempObject.getVoly();
-                    double value = Math.sqrt(vx * vx + vy * vy);
-                    double ra = Math.toRadians(tempObject.getDegree() - 90);
-                    tempObject.setVoly(value * Math.sin(ra));
-                    tempObject.setVolx(value * Math.cos(ra));
+
                 }
             }
         }
@@ -82,6 +63,11 @@ public class KeyInput extends KeyAdapter {
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
+        for(GameObject tempObject:handler.objects) {
+            if(tempObject.getId()==ID.Rocket){
+                ((Rocket)tempObject).setBoostImage(false);
+            }
+        }
     }
 
 }
