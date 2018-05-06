@@ -9,16 +9,14 @@ public class Game extends Canvas implements Runnable {
     private Thread thread;
     private boolean running=false;
     private Handler handler;
-    private Point translateCord;
     private double scale;
     private AffineTransform at;
 
     public Game(){
-        translateCord = new Point(WIDTH/2,HEIGHT/2);
         at = new AffineTransform();
         at.setToTranslation(WIDTH/2,HEIGHT/2);
         scale = 1;
-        handler = new Handler();
+        handler = new Handler(this);
         this.addKeyListener(new KeyInput(handler,this));
         MouseControl msc = new MouseControl(handler,this);
         this.addMouseListener(msc);
@@ -32,9 +30,6 @@ public class Game extends Canvas implements Runnable {
         new Window(WIDTH,HEIGHT,"Space Oddity",this);
     }
 
-    public Point getTranslateCord(){
-        return translateCord;
-    }
 
     public double getScale() {
         return scale;

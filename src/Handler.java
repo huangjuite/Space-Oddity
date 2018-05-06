@@ -1,14 +1,21 @@
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 public class Handler {
+    Game game;
     public LinkedList<GameObject> objects = new LinkedList<GameObject>();
-    private GameObject rocketObject;
+    private Rocket rocketObject;
     public enum Status{START,STOP,PAUSE,EDIT};
     private Status status = Status.START;
+    public Boolean traceMode = false;
+
+    public Handler(Game game){
+        this.game = game;
+    }
 
     public void tick(){
         for(GameObject tempObject : objects){
@@ -43,6 +50,14 @@ public class Handler {
     }
 
     public void render(Graphics g,AffineTransform at){
+        if(traceMode==true && rocketObject!=null){
+            at.setToIdentity();
+            at.scale(game.getScale(),game.getScale());
+            at.translate(game.getWidth()/2,game.getHeight()/2);
+            at.translate(rocketObject.getX(),rocketObject.getY());
+        }
+        System.out.println("AT     :"+at.getTranslateX()+","+at.getTranslateY());
+        System.out.println("rocket :"+rocketObject.getX()+","+rocketObject.getY());
         for(GameObject tempObject : objects){
             tempObject.render(g,at);
         }

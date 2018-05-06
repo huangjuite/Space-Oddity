@@ -15,8 +15,7 @@ public class KeyInput extends KeyAdapter {
         int key = e.getKeyCode();
 
         if(key==KeyEvent.VK_R){
-            //game.getAt().setToScale(1,1);
-            game.getAt().setToTranslation(game.getTranslateCord().getX(),game.getTranslateCord().getY());
+            game.getAt().setToTranslation(game.getWidth()/2,game.getHeight()/2);
         }
 
         for(GameObject tempObject:handler.objects) {
@@ -25,26 +24,18 @@ public class KeyInput extends KeyAdapter {
 
                 if(key== KeyEvent.VK_UP){
                     rocket.setBoostImage(true);
-                    double vx = rocket.getVolx();
-                    double vy = rocket.getVoly();
-                    double value = Math.sqrt(vx * vx + vy * vy) + 0.1;
+                    double value = 1.5;
                     double ra = Math.toRadians(rocket.getDegree() - 90);
-                    rocket.setVoly(value * Math.sin(ra));
-                    rocket.setVolx(value * Math.cos(ra));
+                    rocket.setVoly(value * Math.sin(ra)+rocket.getVolx());
+                    rocket.setVolx(value * Math.cos(ra)+rocket.getVoly());
                 }
 
                 if(key== KeyEvent.VK_DOWN){
-                    double vx = tempObject.getVolx();
-                    double vy = tempObject.getVoly();
-                    double value = Math.sqrt(vx * vx + vy * vy) - 0.1;
-                    if (value > 0) {
-                        double ra = Math.toRadians(tempObject.getDegree() - 90);
-                        tempObject.setVoly(value * Math.sin(ra));
-                        tempObject.setVolx(value * Math.cos(ra));
-                    } else {
-                        tempObject.setVolx(0);
-                        tempObject.setVoly(0);
-                    }
+                    rocket.setBoostImage(true);
+                    double value = -1.5;
+                    double ra = Math.toRadians(rocket.getDegree() - 90);
+                    rocket.setVoly(value * Math.sin(ra)+rocket.getVolx());
+                    rocket.setVolx(value * Math.cos(ra)+rocket.getVoly());
                 }
 
                 if(key==KeyEvent.VK_LEFT){
@@ -55,6 +46,15 @@ public class KeyInput extends KeyAdapter {
                 if(key==KeyEvent.VK_RIGHT) {
                     tempObject.setOmega(tempObject.getOmega() + 0.5);
 
+                }
+
+                if(key==KeyEvent.VK_T){
+                    if(handler.traceMode==true){
+                        handler.traceMode=false;
+                    }
+                    else {
+                        handler.traceMode = true;
+                    }
                 }
             }
         }
