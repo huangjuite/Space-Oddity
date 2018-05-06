@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -30,12 +32,12 @@ public class Handler {
 
             if(tempObject.getId() == ID.Planet)
             {
-                double g = 1, M=60, t=2;
+                double g = 1, M=60, t=1;
                 double dx, dy, dis;
                 double a, ax, ay;
                 dx = tempObject.getX() - rocketObject.getX();
                 dy = tempObject.getY() - rocketObject.getY();
-                dis = Math.sqrt((dx*dx+dy*dy));
+                dis = Math.sqrt(dx*dx+dy*dy);
                 if(dis>10) {
                     a = g * M / dis;
                     ax = a * (dx / dis);
@@ -44,20 +46,17 @@ public class Handler {
                     rocketObject.setVoly(rocketObject.getVoly() + ay*t);
                 }
             }
-
-
         }
     }
 
     public void render(Graphics g,AffineTransform at){
-        if(traceMode==true && rocketObject!=null){
+        if(traceMode){
             at.setToIdentity();
             at.scale(game.getScale(),game.getScale());
-            at.translate(game.getWidth()/2,game.getHeight()/2);
-            at.translate(rocketObject.getX(),rocketObject.getY());
+            at.translate(-rocketObject.getX(),-rocketObject.getY());
+            at.translate(game.getWidth()/2/game.getScale(),game.getHeight()/2/game.getScale());
         }
-        System.out.println("AT     :"+at.getTranslateX()+","+at.getTranslateY());
-        System.out.println("rocket :"+rocketObject.getX()+","+rocketObject.getY());
+
         for(GameObject tempObject : objects){
             tempObject.render(g,at);
         }

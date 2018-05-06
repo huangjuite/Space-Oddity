@@ -16,6 +16,7 @@ public class KeyInput extends KeyAdapter {
 
         if(key==KeyEvent.VK_R){
             game.getAt().setToTranslation(game.getWidth()/2,game.getHeight()/2);
+            game.getAt().scale(game.getScale(),game.getScale());
         }
 
         for(GameObject tempObject:handler.objects) {
@@ -24,27 +25,27 @@ public class KeyInput extends KeyAdapter {
 
                 if(key== KeyEvent.VK_UP){
                     rocket.setBoostImage(true);
-                    double value = 1.5;
+                    double value = 1;
                     double ra = Math.toRadians(rocket.getDegree() - 90);
-                    rocket.setVoly(value * Math.sin(ra)+rocket.getVolx());
-                    rocket.setVolx(value * Math.cos(ra)+rocket.getVoly());
+                    rocket.setVoly(value * Math.sin(ra)+rocket.getVoly());
+                    rocket.setVolx(value * Math.cos(ra)+rocket.getVolx());
                 }
 
                 if(key== KeyEvent.VK_DOWN){
-                    rocket.setBoostImage(true);
-                    double value = -1.5;
+                    //rocket.setBoostImage(false);
+                    double value = -1;
                     double ra = Math.toRadians(rocket.getDegree() - 90);
-                    rocket.setVoly(value * Math.sin(ra)+rocket.getVolx());
-                    rocket.setVolx(value * Math.cos(ra)+rocket.getVoly());
+                    rocket.setVoly(value * Math.sin(ra)+rocket.getVoly());
+                    rocket.setVolx(value * Math.cos(ra)+rocket.getVolx());
                 }
 
                 if(key==KeyEvent.VK_LEFT){
-                    tempObject.setOmega(tempObject.getOmega() - 0.5);
+                    tempObject.setOmega(tempObject.getOmega() - 0.2);
 
                 }
 
                 if(key==KeyEvent.VK_RIGHT) {
-                    tempObject.setOmega(tempObject.getOmega() + 0.5);
+                    tempObject.setOmega(tempObject.getOmega() + 0.2);
 
                 }
 
