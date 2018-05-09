@@ -88,8 +88,11 @@ public class Handler {
         this.status = status;
     }
 
+    public Game getGame() {
+        return game;
+    }
 
-    protected boolean detectCollision(Rocket rocket,Planet planet) {
+    protected boolean detectCollision(Rocket rocket, Planet planet) {
         double dis = Math.sqrt(Math.pow(rocket.x-planet.x,2)+Math.pow(rocket.y-planet.y,2));
 
         if(dis<planet.getRadius()+rocket.getRocketImage().getHeight()/2)
