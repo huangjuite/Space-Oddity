@@ -1,14 +1,19 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.security.PrivateKey;
 
 public class Planet extends GameObject {
     public enum planetType{JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS}
     private planetType type;
-    private double planetSize=1;
+    double earthSize = 1268;
+    private double planetScale=1;
+    private BufferedImage bufferedImage;
 
     public Planet(int x, int y, ID id,planetType type, Handler handler) {
         super(x, y, id,handler);
@@ -17,39 +22,39 @@ public class Planet extends GameObject {
         switch (type){
             case JUPITER:
                 typeName = "jupiter.png";
-                planetSize *= 11.21;
+                planetScale *= 11.21;
                 break;
             case MARS:
                 typeName = "mars.png";
-                planetSize *= 0.532;
+                planetScale *= 0.532;
                 break;
             case MOON:
                 typeName = "moon.png";
-                planetSize *= 0.2724;
+                planetScale *= 0.2724;
                 break;
             case EARTH:
                 typeName = "earth.png";
-                planetSize *= 1;
+                planetScale *= 1;
                 break;
             case VENUS:
                 typeName = "venus.png";
-                planetSize *= 0.949;
+                planetScale *= 0.949;
                 break;
             case MERCURY:
                 typeName = "mercury.png";
-                planetSize *= 0.383;
+                planetScale *= 0.383;
                 break;
             case SATURN:
                 typeName = "saturn.png";
-                planetSize *= 9.45;
+                planetScale *= 9.45;
                 break;
             case NEPTUNE:
                 typeName = "neptune.png";
-                planetSize *= 3.88;
+                planetScale *= 3.88;
                 break;
             case URANUS:
                 typeName = "uranus.png";
-                planetSize *= 4.01;
+                planetScale *= 4.01;
                 break;
         }
         omega=0.5;
@@ -60,6 +65,9 @@ public class Planet extends GameObject {
         }
     }
 
+    public double getRadius(){
+        return  earthSize*planetScale/2;
+    }
 
     @Override
     public void tick() {
@@ -70,12 +78,13 @@ public class Planet extends GameObject {
 
     @Override
     public void render(Graphics g,AffineTransform at) {
-        AffineTransform newAt = AffineTransform.getTranslateInstance(x-bufferedImage.getWidth()/2,y-bufferedImage.getHeight()/2);
+        AffineTransform newAt = AffineTransform.getTranslateInstance(
+                x-bufferedImage.getWidth()*planetScale/2,
+                y-bufferedImage.getHeight()*planetScale/2);
+        newAt.scale(planetScale,planetScale);
         newAt.rotate(Math.toRadians(degree),bufferedImage.getWidth()/2,bufferedImage.getHeight()/2);
-        newAt.scale(planetSize,planetSize);
         Graphics2D g2d = (Graphics2D) g;
         newAt.preConcatenate(at);
-
         g2d.drawImage(bufferedImage,newAt,null);
     }
 }

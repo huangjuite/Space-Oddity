@@ -71,8 +71,8 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                 scale=2;
                 zoom(e.getPoint());
             }
-            else if(scale<0.1){
-                scale=0.1;
+            else if(scale<0.005){
+                scale=0.005;
                 zoom(e.getPoint());
             }
             game.setScale(scale);

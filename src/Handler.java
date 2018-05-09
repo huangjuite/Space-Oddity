@@ -22,13 +22,16 @@ public class Handler {
     public void tick(){
         for(GameObject tempObject : objects){
             tempObject.tick();
-            /*
+
+
             if(status==Status.START && rocketObject!=null && tempObject!=rocketObject){
-                if(detectCollision(rocketObject,tempObject)==true){
+                Planet planet = (Planet)tempObject;
+                if(detectCollision(rocketObject,planet)){
                     rocketObject.setPosition(0,0);
                 }
             }
-            */
+
+
 
             if(tempObject.getId() == ID.Planet)
             {
@@ -46,6 +49,9 @@ public class Handler {
                     rocketObject.setVoly(rocketObject.getVoly() + ay*t);
                 }
             }
+
+
+
         }
     }
 
@@ -82,31 +88,13 @@ public class Handler {
         this.status = status;
     }
 
-    protected Rectangle getCollisionRect(Rectangle rect1, Rectangle rect2) {
-        Area a1 = new Area(rect1);
-        Area a2 = new Area(rect2);
-        a1.intersect(a2);
-        return a1.getBounds();
-    }
 
+    protected boolean detectCollision(Rocket rocket,Planet planet) {
+        double dis = Math.sqrt(Math.pow(rocket.x-planet.x,2)+Math.pow(rocket.y-planet.y,2));
 
-    protected boolean detectCollision(GameObject ob1,GameObject ob2) {
-        if (ob1.getBounds().intersects(ob2.getBounds())) {
-            Rectangle bounds = getCollisionRect(ob1.getBounds(), ob2.getBounds());
-            if (!bounds.isEmpty()) {
-                for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-                    for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
-                        int pixel1 = ob1.getRotateImage().getRGB(x - ob1.getBounds().x, y - ob1.getBounds().y);
-                        int pixel2 = ob2.getRotateImage().getRGB(x - ob2.getBounds().x, y - ob2.getBounds().y);
-                        if (((pixel1 >> 24) & 0xFF) < 225 && ((pixel2 >> 24) & 0xFF) < 225) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            return false;
-        }
+        if(dis<planet.getRadius()+rocket.getRocketImage().getHeight()/2)
+            return true;
+
         return false;
     }
 }

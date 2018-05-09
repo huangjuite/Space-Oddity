@@ -22,11 +22,14 @@ public class Game extends Canvas implements Runnable {
         this.addMouseListener(msc);
         this.addMouseMotionListener(msc);
         this.addMouseWheelListener(msc);
-        handler.addObject(new Rocket(0,0,ID.Rocket,handler));
-        //handler.addObject(new Planet(-150,-150,ID.Planet, Planet.planetType.JUPITER,handler));
-        //handler.addObject(new Planet(150,150,ID.Planet, Planet.planetType.MARS,handler));
-        handler.addObject(new Planet(1000,1000,ID.Planet, Planet.planetType.EARTH,handler));
+
+        handler.addObject(new Planet(-5000,-5000,ID.Planet, Planet.planetType.SATURN,handler));
+        //handler.addObject(new Planet(5000,5000,ID.Planet, Planet.planetType.MARS,handler));
+        //handler.addObject(new Planet(1000,1000,ID.Planet, Planet.planetType.URANUS,handler));
         //handler.addObject(new Planet(0,0,ID.Planet, Planet.planetType.MOON,handler));
+        handler.addObject(new Rocket(0,0,ID.Rocket,handler));
+
+
         new Window(WIDTH,HEIGHT,"Space Oddity",this);
     }
 

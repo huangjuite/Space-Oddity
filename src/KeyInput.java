@@ -19,12 +19,17 @@ public class KeyInput extends KeyAdapter {
             game.getAt().scale(game.getScale(),game.getScale());
         }
 
+        if(key==KeyEvent.VK_Z){
+            game.getAt().scale(1/game.getScale(),1/game.getScale());
+            game.setScale(1/game.getScale());
+        }
+
         for(GameObject tempObject:handler.objects) {
             if (tempObject.getId() == ID.Rocket){
                 Rocket rocket = (Rocket)tempObject;
 
                 if(key== KeyEvent.VK_UP){
-                    rocket.setBoostImage(true);
+                    rocket.setBoostImage(1,true);
                     double value = 1;
                     double ra = Math.toRadians(rocket.getDegree() - 90);
                     rocket.setVoly(value * Math.sin(ra)+rocket.getVoly());
@@ -32,7 +37,7 @@ public class KeyInput extends KeyAdapter {
                 }
 
                 if(key== KeyEvent.VK_DOWN){
-                    //rocket.setBoostImage(false);
+                    rocket.setBoostImage(2,true);
                     double value = -1;
                     double ra = Math.toRadians(rocket.getDegree() - 90);
                     rocket.setVoly(value * Math.sin(ra)+rocket.getVoly());
@@ -40,11 +45,13 @@ public class KeyInput extends KeyAdapter {
                 }
 
                 if(key==KeyEvent.VK_LEFT){
+                    rocket.setBoostImage(3,true);
                     tempObject.setOmega(tempObject.getOmega() - 0.2);
 
                 }
 
                 if(key==KeyEvent.VK_RIGHT) {
+                    rocket.setBoostImage(4,true);
                     tempObject.setOmega(tempObject.getOmega() + 0.2);
 
                 }
@@ -64,9 +71,23 @@ public class KeyInput extends KeyAdapter {
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
+
         for(GameObject tempObject:handler.objects) {
             if(tempObject.getId()==ID.Rocket){
-                ((Rocket)tempObject).setBoostImage(false);
+                Rocket rocket = (Rocket)tempObject;
+
+                if(key== KeyEvent.VK_UP){
+                    rocket.setBoostImage(1,false);
+                }
+                if(key== KeyEvent.VK_DOWN){
+                    rocket.setBoostImage(2,false);
+                }
+                if(key== KeyEvent.VK_LEFT){
+                    rocket.setBoostImage(3,false);
+                }
+                if(key== KeyEvent.VK_RIGHT){
+                    rocket.setBoostImage(4,false);
+                }
             }
         }
     }

@@ -12,7 +12,6 @@ public abstract class GameObject {
     protected double volx;
     protected double voly;
     Handler handler;
-    BufferedImage bufferedImage;
 
     public GameObject(int x,int y,ID id,Handler handler){
         this.x = x;
@@ -81,20 +80,21 @@ public abstract class GameObject {
         this.omega = omega;
     }
 
-    public BufferedImage getRotateImage() {
-        AffineTransform transform = new AffineTransform();
-        transform.rotate(degree, bufferedImage.getWidth()/2, bufferedImage.getHeight()/2);
-        AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-        BufferedImage image = op.filter(bufferedImage, null);
-        return image;
+
+    public BufferedImage resizeImage(BufferedImage before,double scale){
+        int w = (int)(before.getWidth()*scale);
+        int h = (int)(before.getHeight()*scale);
+        BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        AffineTransform at = new AffineTransform();
+        at.scale(scale, scale);
+        AffineTransformOp scaleOp =
+                new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        after = scaleOp.filter(before, after);
+
+        return after;
     }
 
-    public Rectangle getBounds(){
-        BufferedImage image = getRotateImage();
-        Rectangle rec = new Rectangle(x-image.getWidth()/2,y-image.getHeight()/2
-                ,image.getWidth(),image.getHeight());
-        return rec;
-    }
+
 
     public abstract void tick();
     public abstract void render(Graphics g,AffineTransform at);
