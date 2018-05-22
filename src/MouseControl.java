@@ -43,6 +43,8 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
     public void mouseDragged(MouseEvent e) {
         boolean dragObject = false;
 
+
+
         if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==MouseEvent.BUTTON1){
             Point2D point = null;
             try {
