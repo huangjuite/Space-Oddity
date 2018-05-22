@@ -12,18 +12,20 @@ public class Handler {
     public LinkedList<GameObject> objects = new LinkedList<GameObject>();
     private Rocket rocketObject;
     public enum Status{START,STOP,PAUSE,EDIT};
-    private Status status = Status.START;
+    private Status status = Status.EDIT;
     public Boolean traceMode = false;
 
     public Handler(Game game){
         this.game = game;
     }
 
+
+
     public void tick(){
         for(GameObject tempObject : objects){
             tempObject.tick();
 
-
+            //detect collision
             if(status==Status.START && rocketObject!=null && tempObject!=rocketObject){
                 Planet planet = (Planet)tempObject;
                 if(detectCollision(rocketObject,planet)){
@@ -31,9 +33,8 @@ public class Handler {
                 }
             }
 
-
-
-            if(tempObject.getId() == ID.Planet)
+            //apply gravity
+            if(tempObject.getId()==ID.Planet && status==Status.START)
             {
                 double g = 1, M=60, t=1;
                 double dx, dy, dis;

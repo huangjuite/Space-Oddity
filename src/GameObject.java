@@ -24,6 +24,11 @@ public abstract class GameObject {
         setX(x);setY(y);
     }
 
+    public void translate(int dx,int dy){
+        setX(x+dx);
+        setY(y+dy);
+    }
+
     public void setX(int x) {
         this.x = x;
     }
@@ -95,7 +100,7 @@ public abstract class GameObject {
     }
 
 
-
+    public abstract Rectangle getBounds();
     public abstract void tick();
     public abstract void render(Graphics g,AffineTransform at);
 

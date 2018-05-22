@@ -9,6 +9,7 @@ public class Rocket extends GameObject {
     BufferedImage rocketImage[];
     int boostStatus=0;
     double rocketImageScale = 0.8;
+    int rocketImageSize;
 
     public Rocket(int x, int y, ID id,Handler handler) {
         super(x, y, id,handler);
@@ -18,12 +19,11 @@ public class Rocket extends GameObject {
                 BufferedImage image = ImageIO.read(getClass().getResource("rocket"+i+".png"));
                 rocketImage[i] = resizeImage(image,rocketImageScale);
             }
-
-
         }
         catch (IOException e){
             e.printStackTrace();
         }
+        rocketImageSize = rocketImage[0].getWidth();
     }
 
     public BufferedImage getRocketImage(){
@@ -40,6 +40,15 @@ public class Rocket extends GameObject {
     }
 
     @Override
+    public Rectangle getBounds(){
+        Rectangle rec = new Rectangle(x-rocketImageSize/2,
+                y-rocketImageSize/2,
+                rocketImageSize,
+                rocketImageSize);
+        return rec;
+    }
+
+    @Override
     public void tick() {
         x+=volx;
         y+=voly;
@@ -49,11 +58,11 @@ public class Rocket extends GameObject {
     @Override
     public void render(Graphics g,AffineTransform at) {
         AffineTransform newat = AffineTransform.getTranslateInstance(
-                x-rocketImage[0].getWidth()/2,
-                y-rocketImage[0].getHeight()/2);
+                x-rocketImageSize/2,
+                y-rocketImageSize/2);
         newat.rotate(Math.toRadians(degree),
-                rocketImage[0].getWidth()/2,
-                rocketImage[0].getHeight()/2);
+                rocketImageSize/2,
+                rocketImageSize/2);
         Graphics2D g2d = (Graphics2D) g;
         newat.preConcatenate(at);
         g2d.drawImage(rocketImage[0],newat,null);
@@ -72,20 +81,20 @@ public class Rocket extends GameObject {
         AffineTransform newat = new AffineTransform();
         newat.setToIdentity();
         newat.rotate(Math.toRadians(degree),
-                rocketImage[0].getWidth()/2,
-                rocketImage[0].getHeight()/2);
+                rocketImageSize/2,
+                rocketImageSize/2);
         AffineTransform preAt = new AffineTransform();
-        int radius = rocketImage[0].getWidth()/2+40;
-        int centerX = handler.getGame().getWidth()-rocketImage[0].getWidth()/2-40;
-        int centerY = handler.getGame().getHeight()-rocketImage[0].getHeight()/2-40;
-        preAt.translate(centerX-rocketImage[0].getWidth()/2,
-                centerY-rocketImage[0].getHeight()/2);
+        int radius = rocketImageSize/2+40;
+        int centerX = handler.getGame().getWidth()-rocketImageSize/2-40;
+        int centerY = handler.getGame().getHeight()-rocketImageSize/2-40;
+        preAt.translate(centerX-rocketImageSize/2,
+                centerY-rocketImageSize/2);
 
         newat.preConcatenate(preAt);
         g2d.setColor(Color.white);
         g2d.setStroke(new BasicStroke(3));
-        g2d.drawOval(centerX-rocketImage[0].getWidth()/2-40,
-                centerY-rocketImage[0].getHeight()/2-40,
+        g2d.drawOval(centerX-rocketImageSize/2-40,
+                centerY-rocketImageSize/2-40,
                 2*radius, 2*radius);
         g2d.setStroke(new BasicStroke(4));
         double dis = Math.sqrt(volx*volx+voly*voly);
@@ -103,5 +112,4 @@ public class Rocket extends GameObject {
             }
         }
     }
-
 }

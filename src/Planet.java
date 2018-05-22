@@ -70,6 +70,13 @@ public class Planet extends GameObject {
     }
 
     @Override
+    public Rectangle getBounds(){
+        Rectangle rec = new Rectangle(x-(int)getRadius(),y-(int)getRadius(),
+                (int)(2*getRadius()),(int)(2*getRadius()));
+        return rec;
+    }
+
+    @Override
     public void tick() {
         x+=volx;
         y+=voly;

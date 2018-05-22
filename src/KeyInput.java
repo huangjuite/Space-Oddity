@@ -24,6 +24,14 @@ public class KeyInput extends KeyAdapter {
             game.setScale(1/game.getScale());
         }
 
+        if(key==KeyEvent.VK_E){
+            handler.setStatus(Handler.Status.EDIT);
+        }
+
+        if(key==KeyEvent.VK_S){
+            handler.setStatus(Handler.Status.START);
+        }
+
         for(GameObject tempObject:handler.objects) {
             if (tempObject.getId() == ID.Rocket){
                 Rocket rocket = (Rocket)tempObject;
@@ -72,7 +80,7 @@ public class KeyInput extends KeyAdapter {
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
 
-        for(GameObject tempObject:handler.objects) {
+        for(GameObject tempObject:handler.objects){
             if(tempObject.getId()==ID.Rocket){
                 Rocket rocket = (Rocket)tempObject;
 

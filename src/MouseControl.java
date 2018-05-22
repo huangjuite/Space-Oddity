@@ -21,6 +21,7 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
     @Override
     public void mousePressed(MouseEvent e) {
         lastPoint = e.getPoint();
+
     }
 
     @Override
@@ -40,12 +41,36 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(e.getButton()==MouseEvent.BUTTON1){
+        boolean dragObject = false;
+
+        if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==MouseEvent.BUTTON1){
+            Point2D point = null;
+            try {
+                point = game.getAt().inverseTransform(e.getPoint(),point);
+            } catch (NoninvertibleTransformException e1) {
+                e1.printStackTrace();
+            }
+
+            for(GameObject objects:handler.objects){
+                if(objects.getBounds().contains(point)){
+                    int dx = (int)((e.getX()-lastPoint.getX())/game.getScale());
+                    int dy = (int)((e.getY()-lastPoint.getY())/game.getScale());
+                    lastPoint = e.getPoint();
+                    objects.translate(dx,dy);
+                    dragObject = true;
+                    break;
+                }
+            }
+        }
+
+
+        if(!dragObject && e.getButton()==MouseEvent.BUTTON1){
             int dx = (int)((e.getX()-lastPoint.getX())/game.getScale());
             int dy = (int)((e.getY()-lastPoint.getY())/game.getScale());
             game.getAt().translate(dx,dy);
             lastPoint = e.getPoint();
         }
+
     }
 
     @Override
