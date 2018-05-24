@@ -1,4 +1,5 @@
 public enum  ID {
     Rocket(),
-    Planet()
+    Planet(),
+    Asteroid()
 }

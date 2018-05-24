@@ -9,7 +9,10 @@ public class Rocket extends GameObject {
     BufferedImage rocketImage[];
     int boostStatus=0;
     double rocketImageScale = 0.8;
+    boolean locating = false;
     int rocketImageSize;
+    int radarRadius;
+    int fule,tankSize;
 
     public Rocket(int x, int y, ID id,Handler handler) {
         super(x, y, id,handler);
@@ -24,6 +27,9 @@ public class Rocket extends GameObject {
             e.printStackTrace();
         }
         rocketImageSize = rocketImage[0].getWidth();
+
+        setFule(1000);
+        setTankSize(1000);
     }
 
     public BufferedImage getRocketImage(){
@@ -41,7 +47,7 @@ public class Rocket extends GameObject {
 
     @Override
     public Rectangle getBounds(){
-        Rectangle rec = new Rectangle(x-rocketImageSize/2,
+        Rectangle rec  = new Rectangle(x-rocketImageSize/2,
                 y-rocketImageSize/2,
                 rocketImageSize,
                 rocketImageSize);
@@ -73,8 +79,21 @@ public class Rocket extends GameObject {
             }
         }
 
+        if(locating) drawRadar(g2d,at);
+
         drawHUD(g2d);
 
+    }
+
+    public void drawRadar(Graphics2D g2d,AffineTransform at){
+        int fullSize = 10000;
+        radarRadius += 100;
+        if(radarRadius == fullSize) radarRadius = 0;
+        g2d.setColor(new Color(1,1,1,1-radarRadius/(float)fullSize));
+        int px = (int)(at.getTranslateX()+(x-radarRadius)*at.getScaleX());
+        int py = (int)(at.getTranslateY()+(y-radarRadius)*at.getScaleY());
+        int size = (int)(2*radarRadius*handler.getGame().getScale());
+        g2d.drawOval(px,py,size,size);
     }
 
     public void drawHUD(Graphics2D g2d){
@@ -89,16 +108,26 @@ public class Rocket extends GameObject {
         int centerY = handler.getGame().getHeight()-rocketImageSize/2-40;
         preAt.translate(centerX-rocketImageSize/2,
                 centerY-rocketImageSize/2);
-
         newat.preConcatenate(preAt);
-        g2d.setColor(Color.white);
+
+        float hue = (float)(0.5*fule/(float)tankSize);
+        g2d.setColor(new Color(Color.HSBtoRGB(hue,(float)0.77,1)));
+        g2d.fillArc(centerX-rocketImageSize/2-80,
+                centerY-rocketImageSize/2-80,
+                2*radius+80, 2*radius+80,(int)(135+90*(1-fule/(float)tankSize)),
+                (int)(90*(fule/(float)tankSize)));
+        g2d.setColor(Color.gray);
         g2d.setStroke(new BasicStroke(3));
+        g2d.fillOval(centerX-rocketImageSize/2-40,
+                centerY-rocketImageSize/2-40,
+                2*radius, 2*radius);
+        g2d.setColor(Color.white);
         g2d.drawOval(centerX-rocketImageSize/2-40,
                 centerY-rocketImageSize/2-40,
                 2*radius, 2*radius);
         g2d.setStroke(new BasicStroke(4));
         double dis = Math.sqrt(volx*volx+voly*voly);
-        float hue = (float)(0.5 - ((dis>120)?0.5:dis*0.5/120));
+        hue = (float)(0.5 - ((dis>120)?0.5:dis*0.5/120));
         g2d.setColor(new Color(Color.HSBtoRGB(hue,(float)0.77,(float)1)));
 
         int dirx = (int)(volx/dis*radius);
@@ -111,5 +140,32 @@ public class Rocket extends GameObject {
                 g2d.drawImage(rocketImage[i],newat,null);
             }
         }
+
+
+
+    }
+
+    public int getFule() {
+        return fule;
+    }
+
+    public void setFule(int fule) {
+        if(fule>0) this.fule = fule;
+    }
+
+    public int getTankSize() {
+        return tankSize;
+    }
+
+    public void setTankSize(int tankSize) {
+        this.tankSize = tankSize;
+    }
+
+    public boolean isLocating() {
+        return locating;
+    }
+
+    public void setLocating(boolean locating) {
+        this.locating = locating;
     }
 }

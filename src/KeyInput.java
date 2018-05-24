@@ -14,6 +14,8 @@ public class KeyInput extends KeyAdapter {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
 
+        if(key==KeyEvent.VK_A){handler.setDrawingAsteroid();}
+
         if(key==KeyEvent.VK_R){
             game.getAt().setToTranslation(game.getWidth()/2,game.getHeight()/2);
             game.getAt().scale(game.getScale(),game.getScale());
@@ -32,6 +34,14 @@ public class KeyInput extends KeyAdapter {
             handler.setStatus(Handler.Status.START);
         }
 
+        if(key==KeyEvent.VK_L){
+            Rocket rocket = handler.getRocketObject();
+            if(rocket!=null){
+                if(rocket.isLocating()) rocket.setLocating(false);
+                else rocket.setLocating(true);
+            }
+        }
+
         for(GameObject tempObject:handler.objects) {
             if (tempObject.getId() == ID.Rocket){
                 Rocket rocket = (Rocket)tempObject;
@@ -42,6 +52,7 @@ public class KeyInput extends KeyAdapter {
                     double ra = Math.toRadians(rocket.getDegree() - 90);
                     rocket.setVoly(value * Math.sin(ra)+rocket.getVoly());
                     rocket.setVolx(value * Math.cos(ra)+rocket.getVolx());
+                    rocket.setFule(rocket.getFule()-10);
                 }
 
                 if(key== KeyEvent.VK_DOWN){
@@ -50,17 +61,21 @@ public class KeyInput extends KeyAdapter {
                     double ra = Math.toRadians(rocket.getDegree() - 90);
                     rocket.setVoly(value * Math.sin(ra)+rocket.getVoly());
                     rocket.setVolx(value * Math.cos(ra)+rocket.getVolx());
+                    rocket.setFule(rocket.getFule()-10);
+
                 }
 
                 if(key==KeyEvent.VK_LEFT){
                     rocket.setBoostImage(3,true);
                     tempObject.setOmega(tempObject.getOmega() - 0.2);
+                    rocket.setFule(rocket.getFule()-10);
 
                 }
 
                 if(key==KeyEvent.VK_RIGHT) {
                     rocket.setBoostImage(4,true);
                     tempObject.setOmega(tempObject.getOmega() + 0.2);
+                    rocket.setFule(rocket.getFule()-10);
 
                 }
 
