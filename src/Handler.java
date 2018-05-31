@@ -6,9 +6,10 @@ import java.util.LinkedList;
 public class Handler {
     Game game;
     public LinkedList<GameObject> objects = new LinkedList<GameObject>();
+    public LinkedList<CustomButton> buttons = new LinkedList<CustomButton>();
     private Rocket rocketObject;
     public enum Status{START,STOP,PAUSE,EDIT};
-    private Status status = Status.EDIT;
+    private Status status = Status.STOP;
     public Boolean traceMode = false;
     private Point2D drawRecPoint1,drawRecPoint2;
     private boolean deleteObject =false, drawingAsteroid =false;
@@ -18,11 +19,12 @@ public class Handler {
     }
 
 
-
     public void tick(){
-        for(GameObject tempObject : objects){
-            tempObject.tick();
+        for(CustomButton button:buttons){
+            button.tick();
+        }
 
+        for(GameObject tempObject : objects){
             //detect collision
             if(status==Status.START && rocketObject!=null && tempObject!=rocketObject){
                 Planet planet = (Planet)tempObject;
@@ -50,25 +52,11 @@ public class Handler {
                 }
             }
 
-
-
+            //apply
+            tempObject.tick();
         }
     }
 
-    public void setDeleteObject(boolean d) {
-        deleteObject =d;
-        if(d==false)
-        {
-            drawRecPoint1=null;
-            drawRecPoint2=null;
-        }
-    }
-
-    public void setDrawingAsteroid(){ drawingAsteroid = !drawingAsteroid;}
-
-    public boolean getDrawingAsteroid() {
-        return drawingAsteroid;
-    }
 
     public void render(Graphics g, AffineTransform at){
         Graphics2D g2d = (Graphics2D) g;
@@ -87,38 +75,61 @@ public class Handler {
                 newAt1.preConcatenate(at);
                 newAt2.preConcatenate(at);
                 g2d.setColor(Color.white);
-                float dash1[]={10.0f};//這個跟下面那行都是畫虛線
+                float dash1[]={8.0f};//這個跟下面那行都是畫虛線
                 g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f));
                 g2d.drawRect((int) newAt1.getTranslateX(), (int) newAt1.getTranslateY(),(int)(newAt2.getTranslateX()-newAt1.getTranslateX()), (int)(newAt2.getTranslateY()-newAt1.getTranslateY()));
             }
-
         }
-
-
 
         for(GameObject tempObject : objects){
             tempObject.render(g,at);
         }
+        for(CustomButton button : buttons){
+            button.render(g,at);
+        }
+
     }
 
 
-    public void addObject(GameObject object){
-        if(object.getId()==ID.Rocket){
-            rocketObject = (Rocket)object;
+    public void setDeleteObject(boolean d) {
+        deleteObject =d;
+        if(d==false)
+        {
+            drawRecPoint1=null;
+            drawRecPoint2=null;
         }
-        this.objects.add(object);
+    }
+
+    public void setDrawingAsteroid(){ drawingAsteroid = !drawingAsteroid;}
+
+    public boolean getDrawingAsteroid() {
+        return drawingAsteroid;
     }
 
     public void drawRec(Point2D point1, Point2D point2) {
-        System.out.println(point1+"aaa"+point2);
         if(point1!=null&&point2!=null) {
             drawRecPoint1 = new Point2D.Double(Math.min(point1.getX(), point2.getX()), Math.min(point1.getY(), point2.getY()));
             drawRecPoint2 = new Point2D.Double(Math.max(point1.getX(), point2.getX()), Math.max(point1.getY(), point2.getY()));
         }
     }
 
+    public void addButton(CustomButton button){
+        this.buttons.add(button);
+    }
+
+    public void removeButton(CustomButton button){
+        this.buttons.remove(button);
+    }
+
     public Rocket getRocketObject() {
         return rocketObject;
+    }
+
+    public void addObject(GameObject object){
+        if(object.getId()==ID.Rocket){
+            rocketObject = (Rocket)object;
+        }
+        this.objects.add(object);
     }
 
     public void removeObject(GameObject object){

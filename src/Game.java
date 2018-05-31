@@ -1,7 +1,9 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
+import java.sql.Time;
 
 public class Game extends Canvas implements Runnable {
 
@@ -11,6 +13,7 @@ public class Game extends Canvas implements Runnable {
     private Handler handler;
     private double scale;
     private AffineTransform at;
+    private Window mainWindow;
 
     public Game(){
         at = new AffineTransform();
@@ -23,14 +26,29 @@ public class Game extends Canvas implements Runnable {
         this.addMouseMotionListener(msc);
         this.addMouseWheelListener(msc);
 
-        handler.addObject(new Planet(-5000,-5000,ID.Planet, Planet.planetType.SATURN,handler));
-        handler.addObject(new Planet(5000,5000,ID.Planet, Planet.planetType.MARS,handler));
-        //handler.addObject(new Planet(1000,1000,ID.Planet, Planet.planetType.URANUS,handler));
-        //handler.addObject(new Planet(0,0,ID.Planet, Planet.planetType.MOON,handler));
-        handler.addObject(new Rocket(0,0,ID.Rocket,handler));
+        handler.setStatus(Handler.Status.STOP);
+
+        buildStartAnimation();
+
+        mainWindow = new Window(WIDTH,HEIGHT,"Space Oddity",this);
 
 
-        new Window(WIDTH,HEIGHT,"Space Oddity",this);
+    }
+
+    public void buildStartAnimation(){
+        CustomButton button0 = new CustomButton(0,0,ID.CustomButton,CustomButton.buttonType.SATURN,handler);
+        CustomButton button1 = new CustomButton(0,0,ID.CustomButton,CustomButton.buttonType.EARTH,handler);
+        CustomButton button2 = new CustomButton(0,0,ID.CustomButton,CustomButton.buttonType.JUPITER,handler);
+        CustomButton button3 = new CustomButton(0,0,ID.CustomButton,CustomButton.buttonType.NEPTUNE,handler);
+        button0.setOrbitAngle(0);
+        button1.setOrbitAngle(90);
+        button2.setOrbitAngle(180);
+        button3.setOrbitAngle(270);
+        handler.addButton(button0);
+        handler.addButton(button1);
+        handler.addButton(button2);
+        handler.addButton(button3);
+
     }
 
 

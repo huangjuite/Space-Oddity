@@ -1,97 +1,63 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.security.PrivateKey;
 
-public class Planet extends GameObject {
-    public enum planetType{JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS}
-    private planetType type;
+public class CustomButton extends GameObject {
+
+    public enum buttonType{JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS}
+    private CustomButton.buttonType type;
     double earthSize = 1268;
-    private double planetScale=1;
-    private double planetMass = 60/5.97;
+    double planetScale = 0.05;
     private BufferedImage bufferedImage;
-    private double orbitFrequency = 0.01;
-    private Rectangle orbitTrack;
 
-    public Planet(int x, int y, ID id,planetType type, Handler handler) {
+    public CustomButton(int x, int y, ID id,CustomButton.buttonType type, Handler handler) {
         super(x, y, id,handler);
         this.type = type;
         String typeName="jupiter.png";
         switch (type){
             case JUPITER:
                 typeName = "jupiter.png";
-                planetScale *= 11.21;
-                planetMass *= 1898;
                 break;
             case MARS:
                 typeName = "mars.png";
-                planetScale *= 0.532;
-                planetMass *= 0.642;
                 break;
             case MOON:
                 typeName = "moon.png";
-                planetScale *= 0.2724;
-                planetMass *= 0.073;
                 break;
             case EARTH:
                 typeName = "earth.png";
-                planetScale *= 1;
-                planetMass *= 5.97;
                 break;
             case VENUS:
                 typeName = "venus.png";
-                planetScale *= 0.949;
-                planetMass *= 4.87;
                 break;
             case MERCURY:
                 typeName = "mercury.png";
-                planetScale *= 0.383;
-                planetMass *= 0.330;
                 break;
             case SATURN:
                 typeName = "saturn.png";
-                planetScale *= 9.45;
-                planetMass *= 568;
                 break;
             case NEPTUNE:
                 typeName = "neptune.png";
-                planetScale *= 3.88;
-                planetMass *= 102;
                 break;
             case URANUS:
                 typeName = "uranus.png";
-                planetScale *= 4.01;
-                planetMass *= 86.8;
                 break;
         }
-        omega=0.5;
+        omega = 0.5;
         try {
             bufferedImage = ImageIO.read(getClass().getResource(typeName));
         }catch (IOException e){
             e.printStackTrace();
         }
+
+        orbitTrack = new Rectangle(0,0,400,70);
+        orbitTrackAngle = 0;
+        orbitOmega = -0.55;
+
     }
 
-    public double getOrbitFrequency() {
-        return orbitFrequency;
-    }
-
-    public void setOrbitFrequency(double orbitFrequency) {
-        this.orbitFrequency = orbitFrequency;
-    }
-
-    public Rectangle getOrbitTrack() {
-        return orbitTrack;
-    }
-
-    public void setOrbitTrack(Rectangle orbitTrack) {
-        this.orbitTrack = orbitTrack;
-    }
 
     public double getRadius(){
         return  earthSize*planetScale/2;
@@ -104,24 +70,46 @@ public class Planet extends GameObject {
         return rec;
     }
 
-    public double getPlanetMass() {
-        return planetMass;
-    }
-
     @Override
     public void tick() {
-        degree+=omega;
+        planetScale = 0.05;
+        if(handler.getStatus()== Handler.Status.STOP) {
+            orbitAngle = (orbitAngle+orbitOmega)%360;
+            double angle = orbitAngle;
+            x = (int) (orbitTrack.getWidth() * Math.cos(angle * Math.PI / 180.));
+            y = (int) (orbitTrack.getHeight() * Math.sin(angle * Math.PI / 180.));
+
+            double factor;
+            angle = (angle<0)?360+angle:angle;
+            if(angle<=180){
+                factor = 1-Math.abs((angle-90)/90);
+            }else{
+                angle = angle - 180;
+                factor = (1-Math.abs((angle-90)/90))*(-1);
+            }
+            planetScale = 0.05 + factor*0.03;
+
+            int tx = x, ty = y;
+            angle = orbitTrackAngle * Math.PI / 180.;
+            x = (int) (Math.cos(angle) * tx - Math.sin(angle) * ty);
+            y = (int) (Math.sin(angle) * tx + Math.cos(angle) * ty);
+        }
+        degree = (degree+omega)%360;
     }
 
     @Override
-    public void render(Graphics g,AffineTransform at) {
+    public void render(Graphics g, AffineTransform at) {
         AffineTransform newAt = AffineTransform.getTranslateInstance(
                 x-bufferedImage.getWidth()*planetScale/2,
                 y-bufferedImage.getHeight()*planetScale/2);
         newAt.scale(planetScale,planetScale);
         newAt.rotate(Math.toRadians(degree),bufferedImage.getWidth()/2,bufferedImage.getHeight()/2);
         Graphics2D g2d = (Graphics2D) g;
-        newAt.preConcatenate(at);
+
+        AffineTransform preAt = new AffineTransform();
+        preAt.translate(handler.getGame().getWidth()/2,handler.getGame().getHeight()/2);
+
+        newAt.preConcatenate(preAt);
         g2d.drawImage(bufferedImage,newAt,null);
     }
 }

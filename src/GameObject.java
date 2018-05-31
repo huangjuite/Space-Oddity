@@ -1,13 +1,18 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
-public abstract class GameObject {
+public abstract class GameObject{
     protected int x;
     protected int y;
     protected double degree=0;
     protected double omega=0;
+    protected double orbitOmega;
+    protected Rectangle orbitTrack;
+    protected double orbitTrackAngle;
+    protected double orbitAngle;
     protected ID id;
     protected double volx;
     protected double voly;
@@ -57,9 +62,7 @@ public abstract class GameObject {
         return y;
     }
 
-    public ID getId() {
-        return id;
-    }
+    public ID getId() { return id; }
 
     public double getVolx() {
         return volx;
@@ -86,7 +89,39 @@ public abstract class GameObject {
     }
 
 
-    public BufferedImage resizeImage(BufferedImage before,double scale){
+    public Rectangle getOrbitTrack() {
+        return orbitTrack;
+    }
+
+    public void setOrbitTrack(Rectangle orbitTrack) {
+        this.orbitTrack = orbitTrack;
+    }
+
+    public double getOrbitTrackAngle() {
+        return orbitTrackAngle;
+    }
+
+    public void setOrbitTrackAngle(double orbitTrackAngle) {
+        this.orbitTrackAngle = orbitTrackAngle;
+    }
+
+    public double getOrbitOmega() {
+        return orbitOmega;
+    }
+
+    public void setOrbitOmega(double orbitOmega) {
+        this.orbitOmega = orbitOmega;
+    }
+
+    public double getOrbitAngle() {
+        return orbitAngle;
+    }
+
+    public void setOrbitAngle(double orbitAngle) {
+        this.orbitAngle = orbitAngle;
+    }
+
+    public BufferedImage resizeImage(BufferedImage before, double scale){
         int w = (int)(before.getWidth()*scale);
         int h = (int)(before.getHeight()*scale);
         BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
