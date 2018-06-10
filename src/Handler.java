@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
@@ -8,16 +10,46 @@ public class Handler {
     public LinkedList<GameObject> objects = new LinkedList<GameObject>();
     public LinkedList<CustomButton> buttons = new LinkedList<CustomButton>();
     private Rocket rocketObject;
-    public enum Status{START,STOP,PAUSE,EDIT};
-    private Status status = Status.STOP;
+    public enum Status{PLAY, STARTSCENE,CHOOSING,HOWTO,CREDIT,PAUSE,EDIT};
+    private Status status = Status.STARTSCENE;
     public Boolean traceMode = false;
     private Point2D drawRecPoint1,drawRecPoint2;
     private boolean deleteObject =false, drawingAsteroid =false;
+    private GameObject selectedObject;
+    private Checkbox showRadar;
+    private Choice seleItem;
 
     public Handler(Game game){
         this.game = game;
+        showRadar = new Checkbox("show Radar",false);
+        showRadar.setVisible(false);
+        showRadar.setBounds(0,game.getHeight()-15,200,15);
+        seleItem = new Choice();
+        seleItem.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                int i = seleItem.getSelectedIndex();
+                if(selectedObject!=null){
+                    selectedObject.setSelected(false);
+                    selectedObject.setComponentsVisible(false);
+                    selectedObject=null;
+                }
+                if(i==0){
+                    selectedObject = null;
+                }
+                else {
+                    selectedObject = objects.get(i-1);
+                    selectedObject.setSelected(true);
+                    selectedObject.setComponentsVisible(true);
+                }
+            }
+        });
+        seleItem.setVisible(false);
+        seleItem.addItem("0:None");
+        seleItem.setBounds(0,game.getHeight()-30,200,15);
+        game.getFrame().add(showRadar,0);
+        game.getFrame().add(seleItem,0);
     }
-
 
     public void tick(){
         for(CustomButton button:buttons){
@@ -26,7 +58,7 @@ public class Handler {
 
         for(GameObject tempObject : objects){
             //detect collision
-            if(status==Status.START && rocketObject!=null && tempObject!=rocketObject){
+            if(status==Status.PLAY && rocketObject!=null && tempObject!=rocketObject){
                 Planet planet = (Planet)tempObject;
                 if(detectCollision(rocketObject,planet)){
                     rocketObject.setPosition(0,0);
@@ -34,7 +66,7 @@ public class Handler {
             }
 
             //apply gravity
-            if(tempObject.getId()==ID.Planet && status==Status.START)
+            if(tempObject.getId()==ID.Planet && status==Status.PLAY && rocketObject!=null)
             {
                 Planet planet = (Planet)tempObject;
                 double g = 800, M=planet.getPlanetMass(), t=1;
@@ -90,6 +122,23 @@ public class Handler {
 
     }
 
+    public GameObject getSelectedObject() {
+        return selectedObject;
+    }
+
+    public void setSelectItem(GameObject selectedObject) {
+        this.selectedObject = selectedObject;
+        if(selectedObject!=null){
+            for(int i=0;i<objects.size();i++){
+                if(selectedObject==objects.get(i)){
+                    seleItem.select(i+1);
+                }
+            }
+        }
+        else{
+            seleItem.select(0);
+        }
+    }
 
     public void setDeleteObject(boolean d) {
         deleteObject =d;
@@ -98,6 +147,10 @@ public class Handler {
             drawRecPoint1=null;
             drawRecPoint2=null;
         }
+    }
+
+    public boolean showingRadar(){
+        return showRadar.getState();
     }
 
     public void setDrawingAsteroid(){ drawingAsteroid = !drawingAsteroid;}
@@ -130,18 +183,56 @@ public class Handler {
             rocketObject = (Rocket)object;
         }
         this.objects.add(object);
+        for(GameObject gameObject:objects){
+            gameObject.update();
+        }
+        updateSelectItem();
     }
 
-    public void removeObject(GameObject object){
-        this.objects.remove(object);
+    private void updateSelectItem(){
+        seleItem.removeAll();
+        seleItem.add("0:None");
+        int i=1;
+        for(GameObject object:objects){
+            seleItem.add(i+":"+object.getType().toString());
+            i++;
+        }
     }
 
+    public void removeObject(GameObject object,Point2D LeftUpDown, Point2D RightDownPoint){
+        if(object.getId() == ID.Asteroid) {
+            if (((Asteroid) object).getCount() >0) {
+                ((Asteroid) object).setNewAsteroid(LeftUpDown, RightDownPoint);
+                if(((Asteroid) object).getCount() == 0){
+                    this.objects.remove(object);
+                }
+            }
+        }
+        else {
+            this.objects.remove(object);
+            getGame().getFrame().remove(object.getTrackOmegaBar());
+        }
+        for(GameObject gameObject:objects){
+            gameObject.update();
+        }
+        updateSelectItem();
+
+        System.out.println("delete finish");
+    }
     public Status getStatus() {
         return status;
     }
 
     public void setStatus(Status status) {
         this.status = status;
+        if(status==Status.EDIT){
+           showRadar.setVisible(true);
+           seleItem.setVisible(true);
+        }
+        else{
+            showRadar.setVisible(false);
+            seleItem.setVisible(false);
+        }
     }
 
     public Game getGame() {

@@ -6,13 +6,12 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class Rocket extends GameObject {
-    BufferedImage rocketImage[];
-    int boostStatus=0;
-    double rocketImageScale = 0.8;
-    boolean locating = false;
-    int rocketImageSize;
-    int radarRadius;
-    int fule,tankSize;
+    private BufferedImage rocketImage[];
+    private int boostStatus=0;
+    private double rocketImageScale = 0.8;
+    private boolean locating = false;
+    private int rocketImageSize;
+    private int fule,tankSize;
 
     public Rocket(int x, int y, ID id,Handler handler) {
         super(x, y, id,handler);
@@ -85,16 +84,7 @@ public class Rocket extends GameObject {
 
     }
 
-    public void drawRadar(Graphics2D g2d,AffineTransform at){
-        int fullSize = 10000;
-        radarRadius += 100;
-        if(radarRadius == fullSize) radarRadius = 0;
-        g2d.setColor(new Color(1,1,1,1-radarRadius/(float)fullSize));
-        int px = (int)(at.getTranslateX()+(x-radarRadius)*at.getScaleX());
-        int py = (int)(at.getTranslateY()+(y-radarRadius)*at.getScaleY());
-        int size = (int)(2*radarRadius*handler.getGame().getScale());
-        g2d.drawOval(px,py,size,size);
-    }
+
 
     public void drawHUD(Graphics2D g2d){
         AffineTransform newat = new AffineTransform();

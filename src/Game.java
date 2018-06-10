@@ -1,9 +1,7 @@
-import javax.swing.*;
 import java.awt.*;
-import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
-import java.sql.Time;
+import javax.swing.*;
 
 public class Game extends Canvas implements Runnable {
 
@@ -19,6 +17,7 @@ public class Game extends Canvas implements Runnable {
         at = new AffineTransform();
         at.setToTranslation(WIDTH/2,HEIGHT/2);
         scale = 1;
+        mainWindow = new Window(WIDTH,HEIGHT,"Space Oddity",this);
         handler = new Handler(this);
         this.addKeyListener(new KeyInput(handler,this));
         MouseControl msc = new MouseControl(handler,this);
@@ -26,20 +25,43 @@ public class Game extends Canvas implements Runnable {
         this.addMouseMotionListener(msc);
         this.addMouseWheelListener(msc);
 
-        handler.setStatus(Handler.Status.STOP);
+        handler.setStatus(Handler.Status.STARTSCENE);
 
         buildStartAnimation();
 
-        mainWindow = new Window(WIDTH,HEIGHT,"Space Oddity",this);
 
+        start();
+    }
 
+    public synchronized void removeAll(){
+        while(handler.objects.size()!=0){
+            handler.objects.removeLast();
+        }
+        while(handler.buttons.size()!=0){
+            handler.buttons.removeLast();
+        }
+        System.out.println("delete finish");
+    }
+
+    public synchronized void buildEditMode(){
+        running = false;
+        int i=0;
+        int d = getHeight()/(2+9);
+        for(CustomButton.planetType type: CustomButton.planetType.values()){
+            CustomButton button = new CustomButton(getWidth()/2-70,d*i-getHeight()/2+d,ID.CustomButton,type,handler);
+            System.out.println(type);
+            i++;
+            handler.addButton(button);
+        }
+        running = true;
+        start();
     }
 
     public void buildStartAnimation(){
-        CustomButton button0 = new CustomButton(0,0,ID.CustomButton,CustomButton.buttonType.SATURN,handler);
-        CustomButton button1 = new CustomButton(0,0,ID.CustomButton,CustomButton.buttonType.EARTH,handler);
-        CustomButton button2 = new CustomButton(0,0,ID.CustomButton,CustomButton.buttonType.JUPITER,handler);
-        CustomButton button3 = new CustomButton(0,0,ID.CustomButton,CustomButton.buttonType.NEPTUNE,handler);
+        CustomButton button0 = new CustomButton(0,0,ID.CustomButton, CustomButton.planetType.SATURN,handler);
+        CustomButton button1 = new CustomButton(0,0,ID.CustomButton, CustomButton.planetType.EARTH,handler);
+        CustomButton button2 = new CustomButton(0,0,ID.CustomButton, CustomButton.planetType.JUPITER,handler);
+        CustomButton button3 = new CustomButton(0,0,ID.CustomButton, CustomButton.planetType.NEPTUNE,handler);
         button0.setOrbitAngle(0);
         button1.setOrbitAngle(90);
         button2.setOrbitAngle(180);
@@ -48,9 +70,11 @@ public class Game extends Canvas implements Runnable {
         handler.addButton(button1);
         handler.addButton(button2);
         handler.addButton(button3);
-
     }
 
+    public JFrame getFrame(){
+        return mainWindow.getFrame();
+    }
 
     public double getScale() {
         return scale;

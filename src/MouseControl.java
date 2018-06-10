@@ -3,16 +3,18 @@ import java.awt.event.*;
 import java.awt.geom.*;
 
 public class MouseControl implements MouseListener,MouseMotionListener,MouseWheelListener {
-    Handler handler;
-    Game game;
-    Point lastPoint;
-    double asX,asY;
-    Asteroid asteroid;
-    boolean drawingAsteroid = false;
-    boolean deleteObject = false;
-    Point delPoint;
-    Point2D anotherpoint=null;
-    double tempOrbitOmega;
+    private Handler handler;
+    private Game game;
+    private Point lastPoint;
+    private double asX,asY;
+    private Asteroid asteroid;
+    private boolean drawingAsteroid = false;
+    private boolean deleteObject = false;
+    private Point delPoint;
+    private Point2D anotherpoint=null;
+    private double tempOrbitOmega;
+    private CustomButton tempButton;
+    private Point originalButtonPoint;
 
     public MouseControl(Handler handler,Game game) {
         this.handler = handler;
@@ -22,7 +24,34 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        Point mp = e.getPoint();
+        mp.translate(-game.getWidth()/2,-game.getHeight()/2);
 
+        if(handler.getStatus()== Handler.Status.STARTSCENE){
+            for(CustomButton button : handler.buttons){
+                boolean flag = false;
+                if(button.getBounds().contains(mp)){
+                    flag = true;
+                    game.removeAll();
+                    switch (button.getType()){
+                        case EARTH:
+                            handler.setStatus(Handler.Status.CHOOSING);
+                            break;
+                        case SATURN:
+                            handler.setStatus(Handler.Status.HOWTO);
+                            break;
+                        case NEPTUNE:
+                            handler.setStatus(Handler.Status.CREDIT);
+                            break;
+                        case JUPITER:
+                            handler.setStatus(Handler.Status.EDIT);
+                            game.buildEditMode();
+                            break;
+                    }
+                }
+                if(flag) break;
+            }
+        }
     }
 
     @Override
@@ -36,29 +65,54 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
         }
 
 
-        if(handler.getStatus()== Handler.Status.STOP){
+        if(handler.getStatus()== Handler.Status.STARTSCENE){
             for(CustomButton button : handler.buttons){
                 tempOrbitOmega = button.getOrbitOmega();
                 button.setOrbitOmega(0);
             }
-        }else{
-            //創造小行星
-            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()== MouseEvent.BUTTON1) {
-
-                if (handler.getDrawingAsteroid()) {
+        }else if(handler.getStatus()== Handler.Status.EDIT){
+            if(e.getButton()== MouseEvent.BUTTON1) {
+                //創造小行星
+                if(handler.getDrawingAsteroid()) {
                     //亂數產生座標
-                    asteroid = new Asteroid((int) (point.getX() + (Math.random() * 10) / game.getScale()), (int) (point.getY() + (Math.random() * 10) / game.getScale()), ID.Asteroid, handler);
+                    asteroid = new Asteroid((int) (point.getX() + (Math.random() * 10) / game.getScale()),
+                            (int) (point.getY() + (Math.random() * 10) / game.getScale()), ID.Asteroid, handler);
                     asX = point.getX();
                     asY = point.getY();
                     drawingAsteroid = true; //讓drag知道，可以產生更多小行星
                     handler.addObject(asteroid);
                 }
+                else{
+                    Point mp = e.getPoint();
+                    mp.translate(-game.getWidth()/2,-game.getHeight()/2);
+                    for(CustomButton button : handler.buttons){
+                        if(button.getBounds().contains(mp)){
+                            tempButton = button;
+                            originalButtonPoint = button.getPosition();
+                            break;
+                        }
+                    }
+
+                    GameObject selectedObject = handler.getSelectedObject();
+                    if(selectedObject!=null){
+                        selectedObject.setSelected(false);
+                        selectedObject.setComponentsVisible(false);
+                        handler.setSelectItem(null);
+                    }
+                    for(GameObject object : handler.objects){
+                        if(object.getBounds().contains(point)){
+                            handler.setSelectItem(object);
+                            object.setSelected(true);
+                            object.setComponentsVisible(true);
+                            break;
+                        }
+                    }
+                }
             }
-            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()== MouseEvent.BUTTON3) {
+            if(e.getButton()== MouseEvent.BUTTON3){
                 deleteObject = true;
                 delPoint = e.getPoint();
                 handler.setDeleteObject(true);
-
             }
         }
 
@@ -67,31 +121,53 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
     @Override
     public void mouseReleased(MouseEvent e) {
         drawingAsteroid = false;
-        if(handler.getStatus()== Handler.Status.STOP){
+
+        if(handler.getStatus()== Handler.Status.STARTSCENE){
             for(CustomButton button:handler.buttons){
                 button.setOrbitOmega(tempOrbitOmega);
             }
         }
-        else{
-            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()== MouseEvent.BUTTON3) {
+        else if(handler.getStatus()==Handler.Status.EDIT){
 
-                Point2D LeftUpPoint=null, RightDownPoint=null;
+            if(e.getButton()== MouseEvent.BUTTON3) {
+                Point2D point1=null, point2=null;
                 try {
-                    LeftUpPoint = game.getAt().inverseTransform(delPoint,LeftUpPoint);
-                    RightDownPoint = game.getAt().inverseTransform(e.getPoint(),RightDownPoint);
+                    point1 = game.getAt().inverseTransform(delPoint,point1);
+                    point2 = game.getAt().inverseTransform(e.getPoint(),point2);
                 } catch (NoninvertibleTransformException e1) {
                     e1.printStackTrace();
                 }
-                Rectangle delRec = new Rectangle((int)Math.min(LeftUpPoint.getX(),RightDownPoint.getX()),(int)Math.min(LeftUpPoint.getY(),RightDownPoint.getY()),(int)Math.abs(RightDownPoint.getX()-LeftUpPoint.getX()),(int)Math.abs(RightDownPoint.getY()-LeftUpPoint.getY()));
-                for(int i =0 ; i<handler.objects.size() ; i++)
+                Point2D LeftUpPoint = new Point2D.Double((int)Math.min(point1.getX(),point2.getX()), (int)Math.min(point1.getY(),point2.getY()));
+                Point2D RightDownPoint = new Point2D.Double(LeftUpPoint.getX()+Math.abs(point2.getX()-point1.getX()), LeftUpPoint.getY()+Math.abs(point2.getY()-point1.getY()));
+                Rectangle delRec = new Rectangle((int)LeftUpPoint.getX(),(int)LeftUpPoint.getY(),(int)(RightDownPoint.getX()-LeftUpPoint.getX()),(int)(RightDownPoint.getY()-LeftUpPoint.getY()));
+                for(int i=0;i<handler.objects.size();i++)
                 {
-                    if(handler.objects.get(i)!=null)
-                        if (delRec.contains(handler.objects.get(i).getBounds())&& deleteObject) {
-                            handler.removeObject(handler.objects.get(i));
+                    if(handler.objects.get(i)!=null) {
+                        if (delRec.intersects(handler.objects.get(i).getBounds()) && deleteObject) {
+                            GameObject tob = handler.objects.get(i);
+                            handler.removeObject(tob, LeftUpPoint, RightDownPoint);
+                            if(!handler.objects.contains(tob)){
+                                i--;
+                            }
                         }
+                    }
                 }
                 deleteObject = false;
                 handler.setDeleteObject(false);
+            }
+            else if(e.getButton()== MouseEvent.BUTTON1){
+                Point2D point = null;
+                try {
+                    point = game.getAt().inverseTransform(e.getPoint(), point);
+                } catch (NoninvertibleTransformException e1) {
+                    e1.printStackTrace();
+                }
+                if(tempButton!=null){
+                    tempButton.setPosition(originalButtonPoint);
+                    handler.addObject(new Planet((int)point.getX(),(int)point.getY(),
+                            ID.Planet, tempButton.getType(),handler));
+                    tempButton = null;
+                }
             }
         }
     }
@@ -111,14 +187,14 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
         Point2D point = null;
         try {
             point = game.getAt().inverseTransform(e.getPoint(),point);
-            if(deleteObject ==true)
+            if(deleteObject)
                 anotherpoint = game.getAt().inverseTransform(delPoint,anotherpoint);
         } catch (NoninvertibleTransformException e1) {
             e1.printStackTrace();
         }
 
 
-        if(handler.getStatus()==Handler.Status.STOP){
+        if(handler.getStatus()==Handler.Status.STARTSCENE){
             for(CustomButton button : handler.buttons){
                 double delta = (lastPoint.x-e.getPoint().x);
                 button.setOrbitOmega(0);
@@ -132,16 +208,22 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
 
             if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==MouseEvent.BUTTON1){
 
-                if(drawingAsteroid && deleteObject ==false)
+                if(tempButton!=null){
+                    Point mp = e.getPoint();
+                    mp.translate(-game.getWidth()/2,-game.getHeight()/2);
+                    tempButton.setPosition(mp);
+                }
+                else if(drawingAsteroid && !deleteObject)
                 {
                     double dis = Math.sqrt(Math.pow(asX-point.getX(),2)+Math.pow(asY-point.getY(),2));
                     if(dis>128) {//小行星的width為128
-                        asteroid.addAsteroid((int) (point.getX() + (Math.random() * 30) / game.getScale()), (int) (point.getY() + (Math.random() * 30) / game.getScale()));
+                        asteroid.addAsteroid((int) (point.getX() + (Math.random() * 30) / game.getScale()),
+                                (int) (point.getY() + (Math.random() * 30) / game.getScale()));
                         asX = point.getX();
                         asY = point.getY();
                     }
                 }
-                else if(deleteObject ==false){
+                else if(!deleteObject){
                     for (GameObject objects : handler.objects) {
                         if (objects.getBounds().contains(point) && !drawingAsteroid) {
                             int dx = (int) ((e.getX() - lastPoint.getX()) / game.getScale());
@@ -155,23 +237,26 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                 }
             }
 
-
-            if(!dragObject && e.getButton()==MouseEvent.BUTTON1&!drawingAsteroid &&!deleteObject){
+            if(!dragObject && e.getButton()==MouseEvent.BUTTON1 && !drawingAsteroid &&
+                    !deleteObject && tempButton==null){
                 int dx = (int)((e.getX()-lastPoint.getX())/game.getScale());
                 int dy = (int)((e.getY()-lastPoint.getY())/game.getScale());
                 game.getAt().translate(dx,dy);
                 lastPoint = e.getPoint();
             }
 
-            //設定公轉軌道
-            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==MouseEvent.BUTTON3){
-                for(GameObject objects:handler.objects) {
-                    if (objects.getBounds().contains(point)){
 
+            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==MouseEvent.BUTTON3){
+                //設定公轉軌道
+                for(GameObject objects:handler.objects) {
+                    if(objects.getId()!=ID.Asteroid) {
+                        if(objects.getBounds().contains(point)) {
+
+                        }
                     }
                 }
 
-                if(deleteObject ==true)
+                if(deleteObject)
                 {
                     handler.drawRec(anotherpoint, point);
                 }
@@ -182,12 +267,23 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        if(handler.getStatus()== Handler.Status.STARTSCENE){
+            Point mp = e.getPoint();
+            mp.translate(-game.getWidth()/2,-game.getHeight()/2);
+            for(CustomButton button : handler.buttons){
+                if(button.getBounds().contains(mp)){
+                    button.setHover(true);
+                }
+                else{
+                    button.setHover(false);
+                }
+            }
+        }
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if(handler.getStatus()== Handler.Status.STOP){
+        if(handler.getStatus()== Handler.Status.STARTSCENE){
 
         }
         else{

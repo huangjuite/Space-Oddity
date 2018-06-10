@@ -3,7 +3,7 @@ import java.awt.*;
 
 
 public class Window extends Canvas {
-    JFrame frame;
+    private JFrame frame;
 
     public Window(int width,int height,String title,Game game){
         frame = new JFrame(title);
@@ -18,10 +18,9 @@ public class Window extends Canvas {
         frame.add(game);
         frame.setVisible(true);
         requestFocus();
-        game.start();
     }
 
-    public JFrame getFrame() {
-        return frame;
+    public JFrame getFrame(){
+        return this.frame;
     }
 }

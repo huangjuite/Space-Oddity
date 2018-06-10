@@ -6,19 +6,33 @@ import java.io.IOException;
 
 public class CustomButton extends GameObject {
 
-    public enum buttonType{JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS}
-    private CustomButton.buttonType type;
-    double earthSize = 1268;
-    double planetScale = 0.05;
-    private BufferedImage bufferedImage;
 
-    public CustomButton(int x, int y, ID id,CustomButton.buttonType type, Handler handler) {
+    private double earthSize = 1268;
+    private double planetScale = 0.05;
+    private BufferedImage bufferedImage;
+    private boolean hover;
+    private String buttonName;
+
+    public CustomButton(int x, int y, ID id, planetType type, Handler handler) {
         super(x, y, id,handler);
         this.type = type;
         String typeName="jupiter.png";
         switch (type){
             case JUPITER:
                 typeName = "jupiter.png";
+                buttonName = "Make Your Universe";
+                break;
+            case EARTH:
+                typeName = "earth.png";
+                buttonName = "Play";
+                break;
+            case SATURN:
+                typeName = "saturn.png";
+                buttonName = "How To Play";
+                break;
+            case NEPTUNE:
+                typeName = "neptune.png";
+                buttonName = "Credit";
                 break;
             case MARS:
                 typeName = "mars.png";
@@ -26,20 +40,11 @@ public class CustomButton extends GameObject {
             case MOON:
                 typeName = "moon.png";
                 break;
-            case EARTH:
-                typeName = "earth.png";
-                break;
             case VENUS:
                 typeName = "venus.png";
                 break;
             case MERCURY:
                 typeName = "mercury.png";
-                break;
-            case SATURN:
-                typeName = "saturn.png";
-                break;
-            case NEPTUNE:
-                typeName = "neptune.png";
                 break;
             case URANUS:
                 typeName = "uranus.png";
@@ -53,11 +58,15 @@ public class CustomButton extends GameObject {
         }
 
         orbitTrack = new Rectangle(0,0,400,70);
-        orbitTrackAngle = 0;
-        orbitOmega = -0.55;
+        orbitTrackAngle = 45;
+        orbitOmega = -0.40;
 
     }
 
+
+    public void setHover(boolean hover) {
+        this.hover = hover;
+    }
 
     public double getRadius(){
         return  earthSize*planetScale/2;
@@ -73,7 +82,7 @@ public class CustomButton extends GameObject {
     @Override
     public void tick() {
         planetScale = 0.05;
-        if(handler.getStatus()== Handler.Status.STOP) {
+        if(handler.getStatus()== Handler.Status.STARTSCENE) {
             orbitAngle = (orbitAngle+orbitOmega)%360;
             double angle = orbitAngle;
             x = (int) (orbitTrack.getWidth() * Math.cos(angle * Math.PI / 180.));
@@ -99,17 +108,34 @@ public class CustomButton extends GameObject {
 
     @Override
     public void render(Graphics g, AffineTransform at) {
+        Graphics2D g2d = (Graphics2D) g;
         AffineTransform newAt = AffineTransform.getTranslateInstance(
                 x-bufferedImage.getWidth()*planetScale/2,
                 y-bufferedImage.getHeight()*planetScale/2);
-        newAt.scale(planetScale,planetScale);
-        newAt.rotate(Math.toRadians(degree),bufferedImage.getWidth()/2,bufferedImage.getHeight()/2);
-        Graphics2D g2d = (Graphics2D) g;
+        if(hover) {
+            newAt.scale(planetScale*1.5, planetScale*1.5);
+            g2d.setFont(new Font("Arial", Font.BOLD, 25));
+            FontMetrics fm = g2d.getFontMetrics();
+            g2d.setColor(Color.white);
+            g2d.drawString(buttonName
+                    ,x+handler.getGame().getWidth()/2-fm.stringWidth(buttonName)/2+20
+                    ,y+handler.getGame().getHeight()/2-70);
+        }
+        else{
+            newAt.scale(planetScale,planetScale);
+        }
 
+        newAt.rotate(Math.toRadians(degree),bufferedImage.getWidth()/2,bufferedImage.getHeight()/2);
         AffineTransform preAt = new AffineTransform();
         preAt.translate(handler.getGame().getWidth()/2,handler.getGame().getHeight()/2);
-
         newAt.preConcatenate(preAt);
         g2d.drawImage(bufferedImage,newAt,null);
+
+        if(handler.getStatus()== Handler.Status.STARTSCENE){
+            drawOrbitTrack(g2d,at,orbitTrack,orbitTrackAngle);
+        }
     }
+
+
+
 }

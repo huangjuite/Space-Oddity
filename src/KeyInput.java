@@ -31,7 +31,7 @@ public class KeyInput extends KeyAdapter {
         }
 
         if(key==KeyEvent.VK_S){
-            handler.setStatus(Handler.Status.START);
+            handler.setStatus(Handler.Status.PLAY);
         }
 
         if(key==KeyEvent.VK_L){

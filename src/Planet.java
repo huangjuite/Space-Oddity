@@ -1,25 +1,30 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.security.PrivateKey;
+
 
 public class Planet extends GameObject {
-    public enum planetType{JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS}
-    private planetType type;
     double earthSize = 1268;
     private double planetScale=1;
     private double planetMass = 60/5.97;
     private BufferedImage bufferedImage;
-    private double orbitFrequency = 0.01;
-    private Rectangle orbitTrack;
 
-    public Planet(int x, int y, ID id,planetType type, Handler handler) {
+    public Planet(int x, int y, ID id,planetType type, Handler handler){
         super(x, y, id,handler);
+
+        trackOmegaBar.setBounds(200,handler.getGame().getHeight()-15,200,15);
+        trackAbar.setBounds(400,handler.getGame().getHeight()-15,200,15);
+        trackBbar.setBounds(600,handler.getGame().getHeight()-15,200,15);
+        trackAngleBar.setBounds(800,handler.getGame().getHeight()-15,200,15);
+        orbitCenterChoice.setBounds(1000,handler.getGame().getHeight()-15,200,15);
+        handler.getGame().getFrame().add(trackOmegaBar,0);
+        handler.getGame().getFrame().add(trackAbar,0);
+        handler.getGame().getFrame().add(trackBbar,0);
+        handler.getGame().getFrame().add(trackAngleBar,0);
+        handler.getGame().getFrame().add(orbitCenterChoice,0);
+
         this.type = type;
         String typeName="jupiter.png";
         switch (type){
@@ -77,22 +82,6 @@ public class Planet extends GameObject {
         }
     }
 
-    public double getOrbitFrequency() {
-        return orbitFrequency;
-    }
-
-    public void setOrbitFrequency(double orbitFrequency) {
-        this.orbitFrequency = orbitFrequency;
-    }
-
-    public Rectangle getOrbitTrack() {
-        return orbitTrack;
-    }
-
-    public void setOrbitTrack(Rectangle orbitTrack) {
-        this.orbitTrack = orbitTrack;
-    }
-
     public double getRadius(){
         return  earthSize*planetScale/2;
     }
@@ -110,11 +99,26 @@ public class Planet extends GameObject {
 
     @Override
     public void tick() {
+        if(orbitCenterObject!=null){
+            setOrbitTrackPosition(orbitCenterObject.getX(),
+                    orbitCenterObject.getY());
+        }
+        orbitAngle = (orbitAngle+orbitOmega)%360;
+        double angle = orbitAngle;
+        int tx,ty;
+        tx = (int) (orbitTrack.getWidth() * Math.cos(angle * Math.PI / 180.));
+        ty = (int) (orbitTrack.getHeight() * Math.sin(angle * Math.PI / 180.));
+
+        angle = orbitTrackAngle * Math.PI / 180.;
+        x = (int)(orbitTrack.getX()+Math.cos(angle) * tx - Math.sin(angle) * ty);
+        y = (int)(orbitTrack.getY()+Math.sin(angle) * tx + Math.cos(angle) * ty);
+
         degree+=omega;
     }
 
     @Override
     public void render(Graphics g,AffineTransform at) {
+
         AffineTransform newAt = AffineTransform.getTranslateInstance(
                 x-bufferedImage.getWidth()*planetScale/2,
                 y-bufferedImage.getHeight()*planetScale/2);
@@ -122,6 +126,13 @@ public class Planet extends GameObject {
         newAt.rotate(Math.toRadians(degree),bufferedImage.getWidth()/2,bufferedImage.getHeight()/2);
         Graphics2D g2d = (Graphics2D) g;
         newAt.preConcatenate(at);
+        if(handler.showingRadar())
+            drawRadar(g2d,at);
         g2d.drawImage(bufferedImage,newAt,null);
+
+        drawOrbitTrack(g2d,at,orbitTrack,orbitTrackAngle);
+        if(isSelected){
+            drawBounds(g2d,at);
+        }
     }
 }
