@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.AffineTransform;
@@ -16,6 +18,7 @@ public class Handler {
     private Point2D drawRecPoint1,drawRecPoint2;
     private boolean deleteObject =false, drawingAsteroid =false;
     private GameObject selectedObject;
+    private Button homeButton,selectUniverseButton,addNewButton;
     private Checkbox showRadar;
     private Label selectLabel;
     private Choice seleItem;
@@ -24,9 +27,19 @@ public class Handler {
         this.game = game;
         showRadar = new Checkbox("show Radar",false);
         showRadar.setVisible(false);
-        showRadar.setBounds(0,game.getHeight()-15,200,15);
+
+        homeButton = new Button("Home");
+        homeButton.setVisible(false);
+        homeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.removeAll();
+                setStatus(Status.STARTSCENE);
+                game.buildStartAnimation();
+            }
+        });
+
         selectLabel = new Label("select:");
-        selectLabel.setBounds(0,game.getHeight()-30,50,15);
         selectLabel.setVisible(false);
         seleItem = new Choice();
         seleItem.addItemListener(new ItemListener() {
@@ -50,10 +63,44 @@ public class Handler {
         });
         seleItem.setVisible(false);
         seleItem.addItem("0:None");
+
+        selectUniverseButton = new Button("Universe");
+        selectUniverseButton.setVisible(false);
+        selectUniverseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.removeAll();
+                setStatus(Status.CHOOSING);
+                game.buildChooseMode();
+            }
+        });
+
+        addNewButton = new Button("New");
+        addNewButton.setVisible(false);
+        addNewButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
         seleItem.setBounds(50,game.getHeight()-30,150,15);
+        homeButton.setBounds(0,0,70,70);
+        showRadar.setBounds(0,game.getHeight()-15,200,15);
+        selectLabel.setBounds(0,game.getHeight()-30,50,15);
+        selectUniverseButton.setBounds(80,0,70,70);
+        addNewButton.setBounds(80,0,70,70);
+
+        selectUniverseButton.setBackground(Color.gray);
+        homeButton.setBackground(Color.gray);
         showRadar.setBackground(Color.gray);
         selectLabel.setBackground(Color.gray);
         seleItem.setBackground(Color.gray);
+        addNewButton.setBackground(Color.gray);
+
+        game.getFrame().add(addNewButton,0);
+        game.getFrame().add(homeButton,0);
+        game.getFrame().add(selectUniverseButton,0);
         game.getFrame().add(showRadar,0);
         game.getFrame().add(seleItem,0);
         game.getFrame().add(selectLabel,0);
@@ -238,16 +285,32 @@ public class Handler {
 
     public void setStatus(Status status) {
         this.status = status;
-        if(status==Status.EDIT){
-           showRadar.setVisible(true);
-           seleItem.setVisible(true);
-           selectLabel.setVisible(true);
+        boolean i[] = new boolean[6];
+        switch (status){
+            case PLAY:
+                break;
+            case STARTSCENE:
+                i = new boolean[]{false,false,false,false,false,false};
+                break;
+            case EDIT:
+                i = new boolean[]{true,true,true,true,true,false};
+                break;
+            case CHOOSING:
+                i = new boolean[]{true,false,false,false,false,true};
+                break;
+            case HOWTO:
+                break;
+            case CREDIT:
+                break;
+            case PAUSE:
+                break;
         }
-        else{
-            showRadar.setVisible(false);
-            seleItem.setVisible(false);
-            selectLabel.setVisible(false);
-        }
+        homeButton.setVisible(i[0]);
+        showRadar.setVisible(i[1]);
+        seleItem.setVisible(i[2]);
+        selectUniverseButton.setVisible(i[3]);
+        selectLabel.setVisible(i[4]);
+        addNewButton.setVisible(i[5]);
     }
 
     public Game getGame() {

@@ -28,23 +28,30 @@ public class Game extends Canvas implements Runnable {
         handler.setStatus(Handler.Status.STARTSCENE);
 
         buildStartAnimation();
-
-
-        start();
     }
 
-    public synchronized void removeAll(){
+    public void removeAll(){
+        running = false;
+        try {
+            Thread.currentThread().sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("render stop");
         while(handler.objects.size()!=0){
             handler.objects.removeLast();
         }
         while(handler.buttons.size()!=0){
             handler.buttons.removeLast();
         }
+        at = new AffineTransform();
+        at.setToTranslation(WIDTH/2,HEIGHT/2);
+        scale = 1;
+
         System.out.println("delete finish");
     }
 
-    public synchronized void buildEditMode(){
-        running = false;
+    public void buildEditMode(){
         int i=0;
         int d = getHeight()/(2+9);
         for(CustomButton.planetType type: CustomButton.planetType.values()){
@@ -53,7 +60,8 @@ public class Game extends Canvas implements Runnable {
             i++;
             handler.addButton(button);
         }
-        running = true;
+
+        System.out.println("build edit mode finish");
         start();
     }
 
@@ -70,6 +78,16 @@ public class Game extends Canvas implements Runnable {
         handler.addButton(button1);
         handler.addButton(button2);
         handler.addButton(button3);
+
+        System.out.println("build start animation finish");
+        start();
+    }
+
+    public void buildChooseMode(){
+
+
+        System.out.println("build choose mode finish");
+        start();
     }
 
     public JFrame getFrame(){
@@ -90,18 +108,9 @@ public class Game extends Canvas implements Runnable {
 
     public synchronized void start(){
         thread = new Thread(this);
-        thread.start();
         running = true;
-    }
-
-    public synchronized void stop(){
-        try{
-            thread.join();
-            running = false;
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+        thread.start();
+        System.out.println("start render");
     }
 
     @Override
@@ -144,7 +153,6 @@ public class Game extends Canvas implements Runnable {
                 e.printStackTrace();
             }
         }
-        stop();
     }
 
     public void tick(){
