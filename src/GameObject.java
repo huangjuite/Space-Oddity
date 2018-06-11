@@ -26,10 +26,10 @@ public abstract class GameObject {
     public enum planetType {JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS,ASTEROID}
     protected planetType type;
     protected Scrollbar trackOmegaBar,trackAbar,trackBbar,trackAngleBar;
+    protected Label label[];
     protected Choice orbitCenterChoice;
     protected GameObject orbitCenterObject;
     protected LinkedList<GameObject> centerChoice;
-
 
     public GameObject(int x,int y,ID id,Handler handler){
         this.x = x;
@@ -38,10 +38,24 @@ public abstract class GameObject {
         this.handler = handler;
         orbitTrack = new Rectangle(x,y,0,0);
 
+        label = new Label[5];
+        label[0] = new Label("omega:");
+        label[1] = new Label("width:");
+        label[2] = new Label("height");
+        label[3] = new Label("tilt:");
+        label[4] = new Label("orbit center:");
+        for(Label l:label){
+            l.setVisible(false);
+            l.setBackground(Color.gray);
+        }
         trackOmegaBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,-200,200);
         trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,50000);
         trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,50000);
         trackAngleBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,360);
+        trackAngleBar.setBackground(Color.gray);
+        trackOmegaBar.setBackground(Color.gray);
+        trackAbar.setBackground(Color.gray);
+        trackBbar.setBackground(Color.gray);
         trackOmegaBar.setVisible(false);
         trackAbar.setVisible(false);
         trackBbar.setVisible(false);
@@ -54,6 +68,7 @@ public abstract class GameObject {
 
         orbitCenterChoice = new Choice();
         orbitCenterChoice.setVisible(false);
+        orbitCenterChoice.setBackground(Color.gray);
         orbitCenterChoice.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -63,12 +78,36 @@ public abstract class GameObject {
                 }
                 else {
                     orbitCenterObject = centerChoice.get(i-1);
+                    setOrbitTrackPosition(orbitCenterObject.getX(),
+                            orbitCenterObject.getY());
                 }
-                setOrbitTrackPosition(orbitCenterObject.getX(),
-                        orbitCenterObject.getY());
+
             }
         });
         orbitCenterChoice.add("None");
+
+        label[0].setBounds(200,handler.getGame().getHeight()-30,50,15);
+        trackOmegaBar.setBounds(250,handler.getGame().getHeight()-30,250,15);
+        label[1].setBounds(500,handler.getGame().getHeight()-30,50,15);
+        trackAbar.setBounds(550,handler.getGame().getHeight()-30,250,15);
+
+        label[3].setBounds(200,handler.getGame().getHeight()-15,50,15);
+        trackAngleBar.setBounds(250,handler.getGame().getHeight()-15,250,15);
+        label[2].setBounds(500,handler.getGame().getHeight()-15,50,15);
+        trackBbar.setBounds(550,handler.getGame().getHeight()-15,250,15);
+
+        label[4].setBounds(0,handler.getGame().getHeight()-45,100,15);
+        orbitCenterChoice.setBounds(100,handler.getGame().getHeight()-45,100,15);
+
+        handler.getGame().getFrame().add(trackOmegaBar,0);
+        handler.getGame().getFrame().add(trackAbar,0);
+        handler.getGame().getFrame().add(trackBbar,0);
+        handler.getGame().getFrame().add(trackAngleBar,0);
+        handler.getGame().getFrame().add(orbitCenterChoice,0);
+        for(Label l:label){
+            handler.getGame().getFrame().add(l,0);
+        }
+
     }
 
     protected class AdListener implements AdjustmentListener{
@@ -76,10 +115,18 @@ public abstract class GameObject {
         @Override
         public void adjustmentValueChanged(AdjustmentEvent e) {
             if(e.getSource()==trackAbar){
+                if(trackBbar.getValue()>trackAbar.getValue()){
+                    trackBbar.setValue(trackAbar.getValue());
+                    setOrbitTrackB(trackBbar.getValue());
+                }
                 setOrbitTrackA(trackAbar.getValue());
             }
             else if(e.getSource()==trackBbar){
                 setOrbitTrackB(trackBbar.getValue());
+                if(trackBbar.getValue()>trackAbar.getValue()){
+                    trackAbar.setValue(trackBbar.getValue());
+                    setOrbitTrackA(trackAbar.getValue());
+                }
             }
             else if(e.getSource()==trackOmegaBar){
                 setOrbitOmega(trackOmegaBar.getValue()/100.);
@@ -110,6 +157,9 @@ public abstract class GameObject {
         trackBbar.setVisible(b);
         trackAngleBar.setVisible(b);
         orbitCenterChoice.setVisible(b);
+        for(Label l:label){
+            l.setVisible(b);
+        }
     }
 
     public void setPosition(int x,int y){

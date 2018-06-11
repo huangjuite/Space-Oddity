@@ -13,18 +13,6 @@ public class Planet extends GameObject {
 
     public Planet(int x, int y, ID id,planetType type, Handler handler){
         super(x, y, id,handler);
-
-        trackOmegaBar.setBounds(200,handler.getGame().getHeight()-15,200,15);
-        trackAbar.setBounds(400,handler.getGame().getHeight()-15,200,15);
-        trackBbar.setBounds(600,handler.getGame().getHeight()-15,200,15);
-        trackAngleBar.setBounds(800,handler.getGame().getHeight()-15,200,15);
-        orbitCenterChoice.setBounds(1000,handler.getGame().getHeight()-15,200,15);
-        handler.getGame().getFrame().add(trackOmegaBar,0);
-        handler.getGame().getFrame().add(trackAbar,0);
-        handler.getGame().getFrame().add(trackBbar,0);
-        handler.getGame().getFrame().add(trackAngleBar,0);
-        handler.getGame().getFrame().add(orbitCenterChoice,0);
-
         this.type = type;
         String typeName="jupiter.png";
         switch (type){
@@ -99,11 +87,17 @@ public class Planet extends GameObject {
 
     @Override
     public void tick() {
+        double omega = orbitOmega;
         if(orbitCenterObject!=null){
-            setOrbitTrackPosition(orbitCenterObject.getX(),
-                    orbitCenterObject.getY());
+            Rectangle rec = getOrbitTrack();
+            double dis = Math.sqrt(Math.pow(orbitCenterObject.getX()-x,2)+Math.pow(orbitCenterObject.getY()-y,2));
+            double c = Math.sqrt(Math.pow(rec.getWidth(),2)-Math.pow(rec.getHeight(),2));
+            int px = (int)(orbitCenterObject.getX()-c*(-Math.cos(Math.toRadians(getOrbitTrackAngle()))));
+            int py = (int)(orbitCenterObject.getY()-c*(-Math.sin(Math.toRadians(getOrbitTrackAngle()))));
+            setOrbitTrackPosition(px,py);
+            omega = orbitOmega*(1-dis/(2*rec.getWidth()));
         }
-        orbitAngle = (orbitAngle+orbitOmega)%360;
+        orbitAngle = (orbitAngle+omega)%360;
         double angle = orbitAngle;
         int tx,ty;
         tx = (int) (orbitTrack.getWidth() * Math.cos(angle * Math.PI / 180.));

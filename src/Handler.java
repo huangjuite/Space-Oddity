@@ -17,6 +17,7 @@ public class Handler {
     private boolean deleteObject =false, drawingAsteroid =false;
     private GameObject selectedObject;
     private Checkbox showRadar;
+    private Label selectLabel;
     private Choice seleItem;
 
     public Handler(Game game){
@@ -24,6 +25,9 @@ public class Handler {
         showRadar = new Checkbox("show Radar",false);
         showRadar.setVisible(false);
         showRadar.setBounds(0,game.getHeight()-15,200,15);
+        selectLabel = new Label("select:");
+        selectLabel.setBounds(0,game.getHeight()-30,50,15);
+        selectLabel.setVisible(false);
         seleItem = new Choice();
         seleItem.addItemListener(new ItemListener() {
             @Override
@@ -46,9 +50,13 @@ public class Handler {
         });
         seleItem.setVisible(false);
         seleItem.addItem("0:None");
-        seleItem.setBounds(0,game.getHeight()-30,200,15);
+        seleItem.setBounds(50,game.getHeight()-30,150,15);
+        showRadar.setBackground(Color.gray);
+        selectLabel.setBackground(Color.gray);
+        seleItem.setBackground(Color.gray);
         game.getFrame().add(showRadar,0);
         game.getFrame().add(seleItem,0);
+        game.getFrame().add(selectLabel,0);
     }
 
     public void tick(){
@@ -228,10 +236,12 @@ public class Handler {
         if(status==Status.EDIT){
            showRadar.setVisible(true);
            seleItem.setVisible(true);
+           selectLabel.setVisible(true);
         }
         else{
             showRadar.setVisible(false);
             seleItem.setVisible(false);
+            selectLabel.setVisible(false);
         }
     }
 
