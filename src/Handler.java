@@ -105,6 +105,11 @@ public class Handler {
             at.scale(game.getScale(),game.getScale());
             at.translate(-rocketObject.getX(),-rocketObject.getY());
             at.translate(game.getWidth()/2/game.getScale(),game.getHeight()/2/game.getScale());
+        }else if(selectedObject!=null){
+            at.setToIdentity();
+            at.scale(game.getScale(),game.getScale());
+            at.translate(-selectedObject.getX(),-selectedObject.getY());
+            at.translate(game.getWidth()/2/game.getScale(),game.getHeight()/2/game.getScale());
         }
 
         if(deleteObject)
