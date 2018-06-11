@@ -78,8 +78,6 @@ public abstract class GameObject {
                 }
                 else {
                     orbitCenterObject = centerChoice.get(i-1);
-                    setOrbitTrackPosition(orbitCenterObject.getX(),
-                            orbitCenterObject.getY());
                 }
 
             }
@@ -96,8 +94,8 @@ public abstract class GameObject {
         label[2].setBounds(500,handler.getGame().getHeight()-15,50,15);
         trackBbar.setBounds(550,handler.getGame().getHeight()-15,250,15);
 
-        label[4].setBounds(0,handler.getGame().getHeight()-45,100,15);
-        orbitCenterChoice.setBounds(100,handler.getGame().getHeight()-45,100,15);
+        label[4].setBounds(200,handler.getGame().getHeight()-45,100,15);
+        orbitCenterChoice.setBounds(300,handler.getGame().getHeight()-45,200,15);
 
         handler.getGame().getFrame().add(trackOmegaBar,0);
         handler.getGame().getFrame().add(trackAbar,0);

@@ -19,7 +19,7 @@ public class Handler {
     private boolean deleteObject =false, drawingAsteroid =false;
     private GameObject selectedObject;
     private Button homeButton,selectUniverseButton,addNewButton;
-    private Checkbox showRadar;
+    private Checkbox showRadar,planetCenter;
     private Label selectLabel;
     private Choice seleItem;
 
@@ -27,6 +27,8 @@ public class Handler {
         this.game = game;
         showRadar = new Checkbox("show Radar",false);
         showRadar.setVisible(false);
+        planetCenter = new Checkbox("set center",false);
+        planetCenter.setVisible(false);
 
         homeButton = new Button("Home");
         homeButton.setVisible(false);
@@ -84,13 +86,15 @@ public class Handler {
             }
         });
 
-        seleItem.setBounds(50,game.getHeight()-30,150,15);
+        seleItem.setBounds(50,game.getHeight()-45,150,15);
         homeButton.setBounds(0,0,70,70);
         showRadar.setBounds(0,game.getHeight()-15,200,15);
-        selectLabel.setBounds(0,game.getHeight()-30,50,15);
+        selectLabel.setBounds(0,game.getHeight()-45,50,15);
         selectUniverseButton.setBounds(80,0,70,70);
         addNewButton.setBounds(80,0,70,70);
+        planetCenter.setBounds(0,game.getHeight()-30,200,15);
 
+        planetCenter.setBackground(Color.gray);
         selectUniverseButton.setBackground(Color.gray);
         homeButton.setBackground(Color.gray);
         showRadar.setBackground(Color.gray);
@@ -98,6 +102,7 @@ public class Handler {
         seleItem.setBackground(Color.gray);
         addNewButton.setBackground(Color.gray);
 
+        game.getFrame().add(planetCenter,0);
         game.getFrame().add(addNewButton,0);
         game.getFrame().add(homeButton,0);
         game.getFrame().add(selectUniverseButton,0);
@@ -147,12 +152,12 @@ public class Handler {
 
     public void render(Graphics g, AffineTransform at){
         Graphics2D g2d = (Graphics2D) g;
-        if(traceMode){
+        if(traceMode && rocketObject!=null){
             at.setToIdentity();
             at.scale(game.getScale(),game.getScale());
             at.translate(-rocketObject.getX(),-rocketObject.getY());
             at.translate(game.getWidth()/2/game.getScale(),game.getHeight()/2/game.getScale());
-        }else if(selectedObject!=null){
+        }else if(selectedObject!=null && planetCenter.getState()){
             at.setToIdentity();
             at.scale(game.getScale(),game.getScale());
             at.translate(-selectedObject.getX(),-selectedObject.getY());
@@ -285,18 +290,18 @@ public class Handler {
 
     public void setStatus(Status status) {
         this.status = status;
-        boolean i[] = new boolean[6];
+        boolean i[] = new boolean[7];
         switch (status){
             case PLAY:
                 break;
             case STARTSCENE:
-                i = new boolean[]{false,false,false,false,false,false};
+                i = new boolean[]{false,false,false,false,false,false,false};
                 break;
             case EDIT:
-                i = new boolean[]{true,true,true,true,true,false};
+                i = new boolean[]{true,true,true,true,true,false,true};
                 break;
             case CHOOSING:
-                i = new boolean[]{true,false,false,false,false,true};
+                i = new boolean[]{true,false,false,false,false,true,false};
                 break;
             case HOWTO:
                 break;
@@ -311,6 +316,7 @@ public class Handler {
         selectUniverseButton.setVisible(i[3]);
         selectLabel.setVisible(i[4]);
         addNewButton.setVisible(i[5]);
+        planetCenter.setVisible(i[6]);
     }
 
     public Game getGame() {
