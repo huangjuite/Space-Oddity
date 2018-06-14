@@ -9,22 +9,28 @@ import java.util.LinkedList;
 
 public class Handler {
     Game game;
-    public LinkedList<GameObject> objects = new LinkedList<GameObject>();
-    public LinkedList<CustomButton> buttons = new LinkedList<CustomButton>();
+    public LinkedList<GameObject> objects;
+    public LinkedList<CustomButton> buttons;
     private Rocket rocketObject;
     public enum Status{PLAY, STARTSCENE,CHOOSING,HOWTO,CREDIT,PAUSE,EDIT};
     private Status status = Status.STARTSCENE;
+    private Status backToStatus;
     public Boolean traceMode = false;
     private Point2D drawRecPoint1,drawRecPoint2;
     private boolean deleteObject =false, drawingAsteroid =false;
     private GameObject selectedObject;
     private Button homeButton,selectUniverseButton,addNewButton;
+    private LinkedList<UniverseButton> universeButton;
     private Checkbox showRadar,planetCenter;
     private Label selectLabel;
     private Choice seleItem;
 
     public Handler(Game game){
         this.game = game;
+        objects = new LinkedList<>();
+        buttons = new LinkedList<>();
+        universeButton = new LinkedList<>();
+
         showRadar = new Checkbox("show Radar",false);
         showRadar.setVisible(false);
         planetCenter = new Checkbox("set center",false);
@@ -82,7 +88,9 @@ public class Handler {
         addNewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                game.removeAll();
+                setStatus(Status.EDIT);
+                game.buildEditMode();
             }
         });
 
@@ -109,6 +117,17 @@ public class Handler {
         game.getFrame().add(showRadar,0);
         game.getFrame().add(seleItem,0);
         game.getFrame().add(selectLabel,0);
+
+        buildUniverse();
+    }
+
+    public void buildUniverse(){
+        for(int i=0;i<10;i++){
+            UniverseButton b = new UniverseButton("",this,game);
+            b.setBounds((i*100)%800+100,(i/10*100)+200,50,50);
+            universeButton.add(b);
+            game.getFrame().add(b,0);
+        }
     }
 
     public void tick(){
@@ -214,6 +233,14 @@ public class Handler {
         }
     }
 
+    public Status getBackToStatus() {
+        return backToStatus;
+    }
+
+    public void setBackToStatus(Status backToStatus) {
+        this.backToStatus = backToStatus;
+    }
+
     public boolean showingRadar(){
         return showRadar.getState();
     }
@@ -264,18 +291,30 @@ public class Handler {
         }
     }
 
+    public void removeAllObjects(){
+        while(objects.size()!=0){
+            objects.getLast().removeComponent();
+            objects.removeLast();
+        }
+        while(buttons.size()!=0){
+            buttons.getLast().removeComponent();
+            buttons.removeLast();
+        }
+    }
+
     public void removeObject(GameObject object,Point2D LeftUpDown, Point2D RightDownPoint){
         if(object.getId() == ID.Asteroid) {
             if (((Asteroid) object).getCount() >0) {
                 ((Asteroid) object).setNewAsteroid(LeftUpDown, RightDownPoint);
                 if(((Asteroid) object).getCount() == 0){
+                    object.removeComponent();
                     this.objects.remove(object);
                 }
             }
         }
         else {
+            object.removeComponent();
             this.objects.remove(object);
-            getGame().getFrame().remove(object.getTrackOmegaBar());
         }
         for(GameObject gameObject:objects){
             gameObject.update();
@@ -290,18 +329,19 @@ public class Handler {
 
     public void setStatus(Status status) {
         this.status = status;
-        boolean i[] = new boolean[7];
+        boolean i[] = new boolean[8];
         switch (status){
             case PLAY:
+                i = new boolean[]{true,true,true,true,true,false,true,false};
                 break;
             case STARTSCENE:
-                i = new boolean[]{false,false,false,false,false,false,false};
+                i = new boolean[]{false,false,false,false,false,false,false,false};
                 break;
             case EDIT:
-                i = new boolean[]{true,true,true,true,true,false,true};
+                i = new boolean[]{true,true,true,true,true,false,true,false};
                 break;
             case CHOOSING:
-                i = new boolean[]{true,false,false,false,false,true,false};
+                i = new boolean[]{true,false,false,false,false,true,false,true};
                 break;
             case HOWTO:
                 break;
@@ -317,6 +357,10 @@ public class Handler {
         selectLabel.setVisible(i[4]);
         addNewButton.setVisible(i[5]);
         planetCenter.setVisible(i[6]);
+        for(Button b:universeButton){
+            b.setVisible(i[7]);
+        }
+
     }
 
     public Game getGame() {

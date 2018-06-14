@@ -11,9 +11,8 @@ public class Planet extends GameObject {
     private double planetMass = 60/5.97;
     private BufferedImage bufferedImage;
 
-    public Planet(int x, int y, ID id,planetType type, Handler handler){
-        super(x, y, id,handler);
-        this.type = type;
+    public Planet(int x, int y, ID id,ObjectType type, Handler handler){
+        super(x, y, id,type,handler);
         String typeName="jupiter.png";
         switch (type){
             case JUPITER:

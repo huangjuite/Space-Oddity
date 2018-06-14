@@ -23,18 +23,19 @@ public abstract class GameObject {
     private int radarRadius;
     protected boolean isSelected;
     Handler handler;
-    public enum planetType {JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS,ASTEROID}
-    protected planetType type;
+    public enum ObjectType {JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS,ASTEROID,ROCKET}
+    protected ObjectType type;
     protected Scrollbar trackOmegaBar,trackAbar,trackBbar,trackAngleBar;
     protected Label label[];
     protected Choice orbitCenterChoice;
     protected GameObject orbitCenterObject;
     protected LinkedList<GameObject> centerChoice;
 
-    public GameObject(int x,int y,ID id,Handler handler){
+    public GameObject(int x,int y,ID id,ObjectType type,Handler handler){
         this.x = x;
         this.y = y;
         this.id = id;
+        this.type = type;
         this.handler = handler;
         orbitTrack = new Rectangle(x,y,0,0);
 
@@ -177,6 +178,17 @@ public abstract class GameObject {
         setY((int)p.getY());
     }
 
+    public void removeComponent(){
+        for(Label l:label){
+            handler.getGame().getFrame().remove(l);
+        }
+        handler.getGame().getFrame().remove(trackOmegaBar);
+        handler.getGame().getFrame().remove(trackAbar);
+        handler.getGame().getFrame().remove(trackBbar);
+        handler.getGame().getFrame().remove(trackAngleBar);
+        handler.getGame().getFrame().remove(orbitCenterChoice);
+    }
+
     public Point getPosition(){
         return new Point(x,y);
     }
@@ -193,7 +205,7 @@ public abstract class GameObject {
         isSelected = selected;
     }
 
-    public planetType getType() { return type; }
+    public ObjectType getType() { return type; }
 
     public void setX(int x) {
         this.x = x;

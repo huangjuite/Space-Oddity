@@ -13,8 +13,8 @@ public class Rocket extends GameObject {
     private int rocketImageSize;
     private int fule,tankSize;
 
-    public Rocket(int x, int y, ID id,Handler handler) {
-        super(x, y, id,handler);
+    public Rocket(int x, int y, ID id,ObjectType type,Handler handler) {
+        super(x, y, id,type,handler);
         rocketImage = new BufferedImage[5];
         try {
             for(int i=0;i<5;i++){

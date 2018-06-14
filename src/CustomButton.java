@@ -13,9 +13,8 @@ public class CustomButton extends GameObject {
     private boolean hover;
     private String buttonName;
 
-    public CustomButton(int x, int y, ID id, planetType type, Handler handler) {
-        super(x, y, id,handler);
-        this.type = type;
+    public CustomButton(int x, int y, ID id, ObjectType type, Handler handler) {
+        super(x, y, id,type,handler);
         String typeName="jupiter.png";
         switch (type){
             case JUPITER:

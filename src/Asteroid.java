@@ -13,8 +13,7 @@ public class Asteroid extends GameObject{
     private ArrayList<Integer> arrayY = new ArrayList<>();
     public Asteroid(int x, int y, ID id, Handler handler)
     {
-        super(x, y, id,handler);
-        this.type = planetType.ASTEROID;
+        super(x, y, id,ObjectType.ASTEROID,handler);
         System.out.println("new");
         try {
             bufferedImage = ImageIO.read(getClass().getResource("Asteroid.png"));

@@ -36,6 +36,8 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                     switch (button.getType()){
                         case EARTH:
                             handler.setStatus(Handler.Status.CHOOSING);
+                            handler.setBackToStatus(Handler.Status.PLAY);
+                            game.buildChooseMode();
                             break;
                         case SATURN:
                             handler.setStatus(Handler.Status.HOWTO);
@@ -45,6 +47,7 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                             break;
                         case JUPITER:
                             handler.setStatus(Handler.Status.EDIT);
+                            handler.setBackToStatus(Handler.Status.EDIT);
                             game.buildEditMode();
                             break;
                     }

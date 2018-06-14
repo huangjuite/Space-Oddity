@@ -38,12 +38,7 @@ public class Game extends Canvas implements Runnable {
             e.printStackTrace();
         }
         System.out.println("render stop");
-        while(handler.objects.size()!=0){
-            handler.objects.removeLast();
-        }
-        while(handler.buttons.size()!=0){
-            handler.buttons.removeLast();
-        }
+        handler.removeAllObjects();
         at = new AffineTransform();
         at.setToTranslation(WIDTH/2,HEIGHT/2);
         scale = 1;
@@ -51,10 +46,17 @@ public class Game extends Canvas implements Runnable {
         System.out.println("delete finish");
     }
 
+    public void buildPlayMode(){
+        handler.setStatus(Handler.Status.PLAY);
+
+        System.out.println("build play mode finish");
+        start();
+    }
+
     public void buildEditMode(){
         int i=0;
         int d = getHeight()/(2+9);
-        for(CustomButton.planetType type: CustomButton.planetType.values()){
+        for(CustomButton.ObjectType type: CustomButton.ObjectType.values()){
             CustomButton button = new CustomButton(getWidth()/2-70,d*i-getHeight()/2+d,ID.CustomButton,type,handler);
             System.out.println(type);
             i++;
@@ -66,10 +68,10 @@ public class Game extends Canvas implements Runnable {
     }
 
     public void buildStartAnimation(){
-        CustomButton button0 = new CustomButton(0,0,ID.CustomButton, CustomButton.planetType.SATURN,handler);
-        CustomButton button1 = new CustomButton(0,0,ID.CustomButton, CustomButton.planetType.EARTH,handler);
-        CustomButton button2 = new CustomButton(0,0,ID.CustomButton, CustomButton.planetType.JUPITER,handler);
-        CustomButton button3 = new CustomButton(0,0,ID.CustomButton, CustomButton.planetType.NEPTUNE,handler);
+        CustomButton button0 = new CustomButton(0,0,ID.CustomButton, CustomButton.ObjectType.SATURN,handler);
+        CustomButton button1 = new CustomButton(0,0,ID.CustomButton, CustomButton.ObjectType.EARTH,handler);
+        CustomButton button2 = new CustomButton(0,0,ID.CustomButton, CustomButton.ObjectType.JUPITER,handler);
+        CustomButton button3 = new CustomButton(0,0,ID.CustomButton, CustomButton.ObjectType.NEPTUNE,handler);
         button0.setOrbitAngle(0);
         button1.setOrbitAngle(90);
         button2.setOrbitAngle(180);
