@@ -60,6 +60,10 @@ public class Planet extends GameObject {
                 planetScale *= 4.01;
                 planetMass *= 86.8;
                 break;
+            case SUN:
+                typeName = "sun.png";
+                planetScale *= 20;
+                planetMass *= 4000;
         }
         omega=0.5;
         try {
@@ -107,7 +111,7 @@ public class Planet extends GameObject {
         x = (int)(orbitTrack.getX()+Math.cos(angle) * tx - Math.sin(angle) * ty);
         y = (int)(orbitTrack.getY()+Math.sin(angle) * tx + Math.cos(angle) * ty);
 
-        degree+=omega;
+        degree+=getOmega();
     }
 
     @Override
@@ -128,5 +132,13 @@ public class Planet extends GameObject {
         if(isSelected){
             drawBounds(g2d,at);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Planet"+","+x+","+y+","+type+","+degree+","+omega+","+orbitOmega+","+orbitTrack.getLocation().getX()
+                +","+orbitTrack.getLocation().getY()+","+orbitTrack.getWidth()+","+orbitTrack.getHeight()+","+
+                orbitTrackAngle+","+orbitAngle+","+volx+","+voly;
     }
 }

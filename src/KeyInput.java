@@ -42,49 +42,50 @@ public class KeyInput extends KeyAdapter {
             }
         }
 
-        for(GameObject tempObject:handler.objects) {
-            if (tempObject.getId() == ID.Rocket){
-                Rocket rocket = (Rocket)tempObject;
+        if(handler.getStatus()== Handler.Status.PLAY) {
+            for (GameObject tempObject : handler.objects) {
+                if (tempObject.getId() == ID.Rocket) {
+                    Rocket rocket = (Rocket) tempObject;
 
-                if(key== KeyEvent.VK_UP){
-                    rocket.setBoostImage(1,true);
-                    double value = 1;
-                    double ra = Math.toRadians(rocket.getDegree() - 90);
-                    rocket.setVoly(value * Math.sin(ra)+rocket.getVoly());
-                    rocket.setVolx(value * Math.cos(ra)+rocket.getVolx());
-                    rocket.setFule(rocket.getFule()-10);
-                }
-
-                if(key== KeyEvent.VK_DOWN){
-                    rocket.setBoostImage(2,true);
-                    double value = -1;
-                    double ra = Math.toRadians(rocket.getDegree() - 90);
-                    rocket.setVoly(value * Math.sin(ra)+rocket.getVoly());
-                    rocket.setVolx(value * Math.cos(ra)+rocket.getVolx());
-                    rocket.setFule(rocket.getFule()-10);
-
-                }
-
-                if(key==KeyEvent.VK_LEFT){
-                    rocket.setBoostImage(3,true);
-                    tempObject.setOmega(tempObject.getOmega() - 0.2);
-                    rocket.setFule(rocket.getFule()-10);
-
-                }
-
-                if(key==KeyEvent.VK_RIGHT) {
-                    rocket.setBoostImage(4,true);
-                    tempObject.setOmega(tempObject.getOmega() + 0.2);
-                    rocket.setFule(rocket.getFule()-10);
-
-                }
-
-                if(key==KeyEvent.VK_T){
-                    if(handler.traceMode==true){
-                        handler.traceMode=false;
+                    if (key == KeyEvent.VK_UP) {
+                        rocket.setBoostImage(1, true);
+                        double value = 1;
+                        double ra = Math.toRadians(rocket.getDegree() - 90);
+                        rocket.setVoly(value * Math.sin(ra) + rocket.getVoly());
+                        rocket.setVolx(value * Math.cos(ra) + rocket.getVolx());
+                        rocket.setFule(rocket.getFule() - 10);
                     }
-                    else {
-                        handler.traceMode = true;
+
+                    if (key == KeyEvent.VK_DOWN) {
+                        rocket.setBoostImage(2, true);
+                        double value = -1;
+                        double ra = Math.toRadians(rocket.getDegree() - 90);
+                        rocket.setVoly(value * Math.sin(ra) + rocket.getVoly());
+                        rocket.setVolx(value * Math.cos(ra) + rocket.getVolx());
+                        rocket.setFule(rocket.getFule() - 10);
+
+                    }
+
+                    if (key == KeyEvent.VK_LEFT) {
+                        rocket.setBoostImage(3, true);
+                        tempObject.setOmega(tempObject.getOmega() - 0.2);
+                        rocket.setFule(rocket.getFule() - 10);
+
+                    }
+
+                    if (key == KeyEvent.VK_RIGHT) {
+                        rocket.setBoostImage(4, true);
+                        tempObject.setOmega(tempObject.getOmega() + 0.2);
+                        rocket.setFule(rocket.getFule() - 10);
+
+                    }
+
+                    if (key == KeyEvent.VK_T) {
+                        if (handler.traceMode == true) {
+                            handler.traceMode = false;
+                        } else {
+                            handler.traceMode = true;
+                        }
                     }
                 }
             }

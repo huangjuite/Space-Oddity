@@ -79,4 +79,17 @@ public class Asteroid extends GameObject{
             return r;
         }
     }
+
+    @Override
+    public String toString()
+    {
+        String array=Integer.toString(arrayX.size());
+        for(int i=0; i<arrayX.size() ; i++)
+        {
+            array+=","+Integer.toString(arrayX.get(i))+","+Integer.toString(arrayY.get(i));
+        }
+        System.out.println(arrayX);
+        System.out.println(arrayY);
+        return "Asteroid"+","+array;
+    }
 }

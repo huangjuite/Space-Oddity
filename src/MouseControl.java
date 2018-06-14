@@ -49,6 +49,8 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                             handler.setStatus(Handler.Status.EDIT);
                             handler.setBackToStatus(Handler.Status.EDIT);
                             game.buildEditMode();
+                            handler.addObject(new Rocket(0,0,100,ID.Rocket,
+                                    GameObject.ObjectType.ROCKET,handler));
                             break;
                     }
                 }
@@ -270,7 +272,7 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if(handler.getStatus()== Handler.Status.STARTSCENE){
+        if(handler.getStatus()== Handler.Status.STARTSCENE || handler.getStatus()==Handler.Status.EDIT){
             Point mp = e.getPoint();
             mp.translate(-game.getWidth()/2,-game.getHeight()/2);
             for(CustomButton button : handler.buttons){
@@ -305,8 +307,8 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                     scale=2;
                     zoom(e.getPoint());
                 }
-                else if(scale<0.005){
-                    scale=0.005;
+                else if(scale<0.001){
+                    scale=0.001;
                     zoom(e.getPoint());
                 }
                 game.setScale(scale);

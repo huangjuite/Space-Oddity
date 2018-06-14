@@ -31,7 +31,7 @@ public class CustomButton extends GameObject {
                 break;
             case NEPTUNE:
                 typeName = "neptune.png";
-                buttonName = "Credit";
+                buttonName = "Author";
                 break;
             case MARS:
                 typeName = "mars.png";
@@ -47,6 +47,9 @@ public class CustomButton extends GameObject {
                 break;
             case URANUS:
                 typeName = "uranus.png";
+                break;
+            case SUN:
+                typeName = "sun.png";
                 break;
         }
         omega = 0.5;
@@ -111,14 +114,21 @@ public class CustomButton extends GameObject {
         AffineTransform newAt = AffineTransform.getTranslateInstance(
                 x-bufferedImage.getWidth()*planetScale/2,
                 y-bufferedImage.getHeight()*planetScale/2);
-        if(hover) {
+        if(hover){
             newAt.scale(planetScale*1.5, planetScale*1.5);
             g2d.setFont(new Font("Arial", Font.BOLD, 25));
             FontMetrics fm = g2d.getFontMetrics();
             g2d.setColor(Color.white);
-            g2d.drawString(buttonName
-                    ,x+handler.getGame().getWidth()/2-fm.stringWidth(buttonName)/2+20
-                    ,y+handler.getGame().getHeight()/2-70);
+            if(handler.getStatus()==Handler.Status.STARTSCENE) {
+                g2d.drawString(buttonName
+                        , x + handler.getGame().getWidth() / 2 - fm.stringWidth(buttonName) / 2 + 20
+                        , y + handler.getGame().getHeight() / 2 - 70);
+            }
+            else if(handler.getStatus()==Handler.Status.EDIT) {
+                g2d.drawString(getType().toString()
+                        , x + handler.getGame().getWidth() / 2 - fm.stringWidth(getType().toString())-50
+                        , y + handler.getGame().getHeight() / 2 + 20);
+            }
         }
         else{
             newAt.scale(planetScale,planetScale);
@@ -136,5 +146,7 @@ public class CustomButton extends GameObject {
     }
 
 
+    @Override
+    public String toString(){return null;}
 
 }

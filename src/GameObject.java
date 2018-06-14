@@ -23,7 +23,7 @@ public abstract class GameObject {
     private int radarRadius;
     protected boolean isSelected;
     Handler handler;
-    public enum ObjectType {JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS,ASTEROID,ROCKET}
+    public enum ObjectType {JUPITER,MARS,EARTH,MOON,VENUS,MERCURY,NEPTUNE,SATURN,URANUS,SUN,ASTEROID,ROCKET}
     protected ObjectType type;
     protected Scrollbar trackOmegaBar,trackAbar,trackBbar,trackAngleBar;
     protected Label label[];
@@ -50,8 +50,8 @@ public abstract class GameObject {
             l.setBackground(Color.gray);
         }
         trackOmegaBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,-200,200);
-        trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,50000);
-        trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,50000);
+        trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,200000);
+        trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,200000);
         trackAngleBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,360);
         trackAngleBar.setBackground(Color.gray);
         trackOmegaBar.setBackground(Color.gray);
@@ -88,12 +88,12 @@ public abstract class GameObject {
         label[0].setBounds(200,handler.getGame().getHeight()-30,50,15);
         trackOmegaBar.setBounds(250,handler.getGame().getHeight()-30,250,15);
         label[1].setBounds(500,handler.getGame().getHeight()-30,50,15);
-        trackAbar.setBounds(550,handler.getGame().getHeight()-30,250,15);
+        trackAbar.setBounds(550,handler.getGame().getHeight()-30,400,15);
 
         label[3].setBounds(200,handler.getGame().getHeight()-15,50,15);
         trackAngleBar.setBounds(250,handler.getGame().getHeight()-15,250,15);
         label[2].setBounds(500,handler.getGame().getHeight()-15,50,15);
-        trackBbar.setBounds(550,handler.getGame().getHeight()-15,250,15);
+        trackBbar.setBounds(550,handler.getGame().getHeight()-15,400,15);
 
         label[4].setBounds(200,handler.getGame().getHeight()-45,100,15);
         orbitCenterChoice.setBounds(300,handler.getGame().getHeight()-45,200,15);
@@ -245,6 +245,10 @@ public abstract class GameObject {
         return degree;
     }
 
+    public void setDegree(double degree) {
+        this.degree = degree;
+    }
+
     public double getOmega() {
         return omega;
     }
@@ -255,6 +259,10 @@ public abstract class GameObject {
 
     public Rectangle getOrbitTrack() {
         return orbitTrack;
+    }
+
+    public void setOrbitTrack(Rectangle orbitTrack) {
+        this.orbitTrack = orbitTrack;
     }
 
     public void setOrbitTrackA(int a) {
@@ -314,8 +322,8 @@ public abstract class GameObject {
                 translatey=at.getTranslateY()+trackRec.getY()*at.getScaleX();
         g2d.rotate(Math.toRadians(trackAngle),translatex,translatey);
         g2d.setColor(Color.white);
-        Stroke dashed = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                0, new float[]{2,15}, 0);
+        Stroke dashed = new BasicStroke((float)1.5, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                0, new float[]{(float)1.5,15}, 0);
         g2d.setStroke(dashed);
         g2d.drawArc((int)((-trackRec.getWidth())*at.getScaleX()+translatex),
                 (int)((-trackRec.getHeight())*at.getScaleX()+translatey),
@@ -325,8 +333,8 @@ public abstract class GameObject {
     }
 
     public void drawRadar(Graphics2D g2d,AffineTransform at){
-        int fullSize = 15000;
-        radarRadius += 100;
+        int fullSize = 120000;
+        radarRadius += 1000;
         radarRadius %= fullSize;
         g2d.setStroke(new BasicStroke(1));
         if(isSelected) {
@@ -357,5 +365,6 @@ public abstract class GameObject {
     public abstract Rectangle getBounds();
     public abstract void tick();
     public abstract void render(Graphics g,AffineTransform at);
+    public abstract  String toString();
 
 }

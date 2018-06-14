@@ -39,6 +39,7 @@ public class Game extends Canvas implements Runnable {
         }
         System.out.println("render stop");
         handler.removeAllObjects();
+
         at = new AffineTransform();
         at.setToTranslation(WIDTH/2,HEIGHT/2);
         scale = 1;
@@ -57,12 +58,15 @@ public class Game extends Canvas implements Runnable {
         int i=0;
         int d = getHeight()/(2+9);
         for(CustomButton.ObjectType type: CustomButton.ObjectType.values()){
-            CustomButton button = new CustomButton(getWidth()/2-70,d*i-getHeight()/2+d,ID.CustomButton,type,handler);
-            System.out.println(type);
-            i++;
-            handler.addButton(button);
+            if(type!=GameObject.ObjectType.ASTEROID && type!= GameObject.ObjectType.ROCKET){
+                CustomButton button = new CustomButton(getWidth()/2-70,d*i-getHeight()/2+d,ID.CustomButton,type,handler);
+                System.out.println(type);
+                i++;
+                handler.addButton(button);
+            }
         }
-
+        scale = 0.1;
+        at.scale(scale,scale);
         System.out.println("build edit mode finish");
         start();
     }
