@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 public class UniverseButton extends Button implements ActionListener {
     String Universe;
@@ -33,6 +34,6 @@ public class UniverseButton extends Button implements ActionListener {
             handler.setStatus(Handler.Status.EDIT);
             game.buildEditMode();
         }
-        //constructUniverse();
+        constructUniverse();
     }
 }

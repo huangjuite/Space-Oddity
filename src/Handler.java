@@ -19,7 +19,7 @@ public class Handler {
     private Point2D drawRecPoint1,drawRecPoint2;
     private boolean deleteObject =false, drawingAsteroid =false;
     private GameObject selectedObject;
-    private Button homeButton,selectUniverseButton,addNewButton;
+    private Button homeButton,selectUniverseButton,addNewButton,saveButton,loadButton;
     private LinkedList<UniverseButton> universeButton;
     private Checkbox showRadar,planetCenter;
     private Label selectLabel;
@@ -30,6 +30,22 @@ public class Handler {
         objects = new LinkedList<>();
         buttons = new LinkedList<>();
         universeButton = new LinkedList<>();
+
+        saveButton = new Button("Save");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        loadButton = new Button("Load");
+        loadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
 
         showRadar = new Checkbox("show Radar",false);
         showRadar.setVisible(false);
@@ -101,6 +117,8 @@ public class Handler {
         selectUniverseButton.setBounds(80,0,70,70);
         addNewButton.setBounds(80,0,70,70);
         planetCenter.setBounds(0,game.getHeight()-30,200,15);
+        saveButton.setBounds(game.getWidth()-200,0,70,70);
+        loadButton.setBounds(game.getWidth()-100,0,70,70);
 
         planetCenter.setBackground(Color.gray);
         selectUniverseButton.setBackground(Color.gray);
@@ -109,7 +127,11 @@ public class Handler {
         selectLabel.setBackground(Color.gray);
         seleItem.setBackground(Color.gray);
         addNewButton.setBackground(Color.gray);
+        saveButton.setBackground(Color.gray);
+        loadButton.setBackground(Color.gray);
 
+        game.getFrame().add(saveButton,0);
+        game.getFrame().add(loadButton,0);
         game.getFrame().add(planetCenter,0);
         game.getFrame().add(addNewButton,0);
         game.getFrame().add(homeButton,0);
@@ -329,19 +351,19 @@ public class Handler {
 
     public void setStatus(Status status) {
         this.status = status;
-        boolean i[] = new boolean[8];
+        boolean i[] = new boolean[10];
         switch (status){
             case PLAY:
-                i = new boolean[]{true,true,true,true,true,false,true,false};
+                i = new boolean[]{true,true,true,true,true,false,true,false,false,false};
                 break;
             case STARTSCENE:
-                i = new boolean[]{false,false,false,false,false,false,false,false};
+                i = new boolean[]{false,false,false,false,false,false,false,false,false,false};
                 break;
             case EDIT:
-                i = new boolean[]{true,true,true,true,true,false,true,false};
+                i = new boolean[]{true,true,true,true,true,false,true,false,false,false};
                 break;
             case CHOOSING:
-                i = new boolean[]{true,false,false,false,false,true,false,true};
+                i = new boolean[]{true,false,false,false,false,true,false,true,true,true};
                 break;
             case HOWTO:
                 break;
@@ -360,6 +382,8 @@ public class Handler {
         for(Button b:universeButton){
             b.setVisible(i[7]);
         }
+        saveButton.setVisible(i[8]);
+        loadButton.setVisible(i[9]);
 
     }
 
