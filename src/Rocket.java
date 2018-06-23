@@ -173,7 +173,7 @@ public class Rocket extends GameObject {
                 destChoiceList.add(obj);
             }
         }
-
+        int index = destChoice.getSelectedIndex();
         destChoice.removeAll();
         destChoice.add("0:None");
         int i=1;
@@ -181,6 +181,8 @@ public class Rocket extends GameObject {
             destChoice.add(i+":"+object.getType().toString());
             i++;
         }
+        if(index!=-1)
+            destChoice.select(index);
     }
 
     public BufferedImage getRocketImage(){
@@ -207,7 +209,7 @@ public class Rocket extends GameObject {
     }
 
     @Override
-    public Rectangle getBounds(){
+     public Rectangle getBounds(){
         Rectangle rec  = new Rectangle(x-rocketImageSize/2,
                 y-rocketImageSize/2,
                 rocketImageSize,
@@ -353,11 +355,20 @@ public class Rocket extends GameObject {
         this.locating = locating;
     }
 
+    public void setDestChoice(int x)
+    {
+        destChoice.select(x);
+        if(x==0)
+            destinationPlanet = null;
+        else
+            destinationPlanet = destChoiceList.get(x-1);
+    }
+
     @Override
     public String toString()
     {
         return "Rocket"+","+x+","+y+","+tankSize+","+degree+","+omega+","+orbitOmega+","+orbitTrack.getLocation().getX()
                 +","+orbitTrack.getLocation().getY()+","+orbitTrack.getWidth()+","+orbitTrack.getHeight()+","+
-                orbitTrackAngle+","+orbitAngle+","+volx+","+voly;
+                orbitTrackAngle+","+orbitAngle+","+volx+","+voly+","+destChoice.getSelectedIndex();
     }
 }

@@ -139,6 +139,6 @@ public class Planet extends GameObject {
     {
         return "Planet"+","+x+","+y+","+type+","+degree+","+omega+","+orbitOmega+","+orbitTrack.getLocation().getX()
                 +","+orbitTrack.getLocation().getY()+","+orbitTrack.getWidth()+","+orbitTrack.getHeight()+","+
-                orbitTrackAngle+","+orbitAngle+","+volx+","+voly;
+                orbitTrackAngle+","+orbitAngle+","+volx+","+voly+","+orbitCenterChoice.getSelectedIndex();
     }
 }

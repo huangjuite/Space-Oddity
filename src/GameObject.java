@@ -130,6 +130,7 @@ public abstract class GameObject {
 
     void update(){
         centerChoiceList = new LinkedList<GameObject>();
+        int index = orbitCenterChoice.getSelectedIndex();
         orbitCenterChoice.removeAll();
         orbitCenterChoice.add("0:None");
         int i=1;
@@ -140,6 +141,11 @@ public abstract class GameObject {
                 i++;
             }
         }
+        orbitCenterChoice.select(index);
+        trackOmegaBar.setValue((int)omega);
+        trackAbar.setValue((int)orbitTrack.getWidth());
+        trackBbar.setValue((int)orbitTrack.getHeight());
+        trackAngleBar.setValue((int)orbitAngle);
     }
 
     public void setComponentsVisible(boolean b){
@@ -367,6 +373,15 @@ public abstract class GameObject {
         g2d.drawRoundRect(px,py,(int)((rec.getWidth()+400)*at.getScaleX()),
                 (int)((rec.getHeight()+400)*at.getScaleY()),
                 (int)(100*at.getScaleY()),(int)(100*at.getScaleY()));
+    }
+
+    public void setOrbitCenterChoice(int x)
+    {
+        orbitCenterChoice.select(x);
+        if(x==0)
+            orbitCenterObject = null;
+        else
+            orbitCenterObject = centerChoiceList.get(x-1);
     }
 
     public abstract Rectangle getBounds();

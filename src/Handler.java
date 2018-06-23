@@ -26,10 +26,9 @@ public class Handler {
     private Checkbox showRadar,planetCenter;
     private Label selectLabel;
     private Choice seleItem;
-    public LinkedList<GameObject> loadObjects;
+    //public LinkedList<GameObject> loadObjects;
     boolean readMode = false;
     private File logFile;
-    private String data[][] = new String [100][11];
     private static final double gravityConstant = 850;//6.674×10−11
 
     public Handler(Game game){
@@ -37,14 +36,17 @@ public class Handler {
         objects = new LinkedList<>();
         buttons = new LinkedList<>();
         universeButton = new LinkedList<>();
-        loadObjects = new LinkedList<>();
+        //loadObjects = new LinkedList<>();
 
         saveButton = new Button("Save");
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    saveGame();
+                    if(status==Status.CHOOSING)
+                        saveGame();
+                   else
+                        creatingButton();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -198,35 +200,34 @@ public class Handler {
     }
 
 
-    public void render(Graphics g, AffineTransform at){
+    public void render(Graphics g, AffineTransform at) {
         Graphics2D g2d = (Graphics2D) g;
-        if(traceMode && rocketObject!=null){
+        if (traceMode && rocketObject != null) {
             at.setToIdentity();
-            at.scale(game.getScale(),game.getScale());
-            at.translate(-rocketObject.getX(),-rocketObject.getY());
-            at.translate(game.getWidth()/2/game.getScale(),game.getHeight()/2/game.getScale());
-        }else if(selectedObject!=null && planetCenter.getState()){
+            at.scale(game.getScale(), game.getScale());
+            at.translate(-rocketObject.getX(), -rocketObject.getY());
+            at.translate(game.getWidth() / 2 / game.getScale(), game.getHeight() / 2 / game.getScale());
+        } else if (selectedObject != null && planetCenter.getState()) {
             at.setToIdentity();
-            at.scale(game.getScale(),game.getScale());
-            at.translate(-selectedObject.getX(),-selectedObject.getY());
-            at.translate(game.getWidth()/2/game.getScale(),game.getHeight()/2/game.getScale());
+            at.scale(game.getScale(), game.getScale());
+            at.translate(-selectedObject.getX(), -selectedObject.getY());
+            at.translate(game.getWidth() / 2 / game.getScale(), game.getHeight() / 2 / game.getScale());
         }
 
-        if(deleteObject)
-        {
-            if(drawRecPoint1!=null) {
+        if (deleteObject) {
+            if (drawRecPoint1 != null) {
                 AffineTransform newAt1 = AffineTransform.getTranslateInstance(drawRecPoint1.getX(), drawRecPoint1.getY());
                 AffineTransform newAt2 = AffineTransform.getTranslateInstance(drawRecPoint2.getX(), drawRecPoint2.getY());
                 newAt1.preConcatenate(at);
                 newAt2.preConcatenate(at);
                 g2d.setColor(Color.white);
-                float dash1[]={8.0f};//這個跟下面那行都是畫虛線
+                float dash1[] = {8.0f};//這個跟下面那行都是畫虛線
                 g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f));
-                g2d.drawRect((int) newAt1.getTranslateX(), (int) newAt1.getTranslateY(),(int)(newAt2.getTranslateX()-newAt1.getTranslateX()), (int)(newAt2.getTranslateY()-newAt1.getTranslateY()));
+                g2d.drawRect((int) newAt1.getTranslateX(), (int) newAt1.getTranslateY(), (int) (newAt2.getTranslateX() - newAt1.getTranslateX()), (int) (newAt2.getTranslateY() - newAt1.getTranslateY()));
             }
         }
 
-        synchronized(this){
+        synchronized (this) {
             for (GameObject tempObject : objects) {
                 if (tempObject.getId() != ID.Rocket)
                     tempObject.render(g, at);
@@ -234,41 +235,41 @@ public class Handler {
             for (CustomButton button : buttons) {
                 button.render(g, at);
             }
-        }
 
-        if(rocketObject!=null){
-            Point[] p = new Point[rocketObject.getEstimateLine().length];
-            for(int i=0;i<p.length;i++) {
-                p[i] = new Point();
-            }
-            p[0].setLocation(rocketObject.getPosition());
-            Point.Double v = new Point.Double();
-            v.setLocation(rocketObject.getVelocity());
-            for(int i=1;i<p.length;i++){
-                p[i].setLocation(p[i-1].getLocation());
-                for(GameObject object:objects){
-                    if(object.getId()==ID.Planet && status==Status.PLAY && rocketObject!=null) {
-                        Planet planet = (Planet) object;
-                        double M = planet.getPlanetMass();
-                        double dx, dy, dis;
-                        double a, ax, ay;
-                        dx = object.getX() - p[i].getX();
-                        dy = object.getY() - p[i].getY();
-                        dis = Math.sqrt(dx * dx + dy * dy);
-                        if (dis > 10) {
-                            a = gravityConstant * M / (dis * dis);
-                            ax = a * (dx / dis);
-                            ay = a * (dy / dis);
-                            v.setLocation(v.getX()+ax,v.getY()+ay);
+            if (rocketObject != null) {
+                Point[] p = new Point[rocketObject.getEstimateLine().length];
+                for (int i = 0; i < p.length; i++) {
+                    p[i] = new Point();
+                }
+                p[0].setLocation(rocketObject.getPosition());
+                Point.Double v = new Point.Double();
+                v.setLocation(rocketObject.getVelocity());
+                for (int i = 1; i < p.length; i++) {
+                    p[i].setLocation(p[i - 1].getLocation());
+                    for (GameObject object : objects) {
+                        if (object.getId() == ID.Planet && status == Status.PLAY && rocketObject != null) {
+                            Planet planet = (Planet) object;
+                            double M = planet.getPlanetMass();
+                            double dx, dy, dis;
+                            double a, ax, ay;
+                            dx = object.getX() - p[i].getX();
+                            dy = object.getY() - p[i].getY();
+                            dis = Math.sqrt(dx * dx + dy * dy);
+                            if (dis > 10) {
+                                a = gravityConstant * M / (dis * dis);
+                                ax = a * (dx / dis);
+                                ay = a * (dy / dis);
+                                v.setLocation(v.getX() + ax, v.getY() + ay);
+                            }
                         }
                     }
+                    p[i].setLocation(p[i].getX() + v.getX(), p[i].getY() + v.getY());
                 }
-                p[i].setLocation(p[i].getX()+v.getX(),p[i].getY()+v.getY());
+                rocketObject.setEstimateLine(p);
+                rocketObject.render(g, at);
             }
-            rocketObject.setEstimateLine(p);
-            rocketObject.render(g,at);
-        }
 
+        }
     }
 
     public GameObject getSelectedObject() {
@@ -453,6 +454,26 @@ public class Handler {
         return false;
     }
 
+   public void creatingButton()
+    {
+        LinkedList<LinkedList<String>> data = new LinkedList<>();
+        String currentString;
+        for(int i=0; i<objects.size() ; i++)
+        {
+            currentString = objects.get(i).toString();
+            String[] set = currentString.split(",");
+            LinkedList<String> d = new LinkedList<>();
+            for(String s :set)
+                d.add(s);
+            data.add(d);
+        }
+        UniverseButton b = new UniverseButton("Map"+String.valueOf(universeButton.size()+1),this,game, data);
+        b.setBounds((universeButton.size()*100)%800+100,(universeButton.size()/10*100)+200,50,50);
+        b.setVisible(false);
+        universeButton.add(b);
+        game.getFrame().add(b,0);
+    }
+
     public void saveGame() throws IOException
     {
         int useSelection = JFileChooser.APPROVE_OPTION;
@@ -463,25 +484,32 @@ public class Handler {
             if(useSelection == JFileChooser.APPROVE_OPTION)
                 logFile = fc.getSelectedFile();
         }
-        if(useSelection == JFileChooser.APPROVE_OPTION)
-        {
-            if(!logFile.getAbsolutePath().endsWith(".txt"))
-            {
-                File t = new File(logFile.getAbsolutePath()+".txt");
+        if(useSelection == JFileChooser.APPROVE_OPTION) {
+            if (!logFile.getAbsolutePath().endsWith(".txt")) {
+                File t = new File(logFile.getAbsolutePath() + ".txt");
                 logFile = t;
             }
-            FileWriter fileWriter = new FileWriter(logFile,true);
+            FileWriter fileWriter = new FileWriter(logFile, true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write("$"+Integer.toString(universeButton.size()+1));
-            bufferedWriter.newLine();
-            for(GameObject gameObject:objects)
-            {
-                bufferedWriter.write(gameObject.toString());
+            for (int i = 0; i < universeButton.size(); i++) {
+                bufferedWriter.write("$" + Integer.toString(i+ 1));
                 bufferedWriter.newLine();
+                LinkedList<LinkedList<String>> data = universeButton.get(i).getData();
+                for(int j = 0 ; j<data.size() ; j++)
+                {
+                    String string = "";
+                    string += data.get(j).get(0);
+                    for(int k=1 ; k<data.get(j).size() ; k++)
+                    {
+                        string+=","+data.get(j).get(k);
+                    }
+                    bufferedWriter.write(string);
+                    bufferedWriter.newLine();
+                }
+                bufferedWriter.write("#" + Integer.toString(i + 1));
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
             }
-            bufferedWriter.write("#"+Integer.toString(universeButton.size()+1));
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
         }
     }
 
@@ -489,7 +517,7 @@ public class Handler {
     {
         JFileChooser fc = new JFileChooser();
         int user = fc.showOpenDialog(game.getFrame());
-        int i=0;
+        LinkedList<LinkedList<String>> data = new LinkedList<>();
         if(user == JFileChooser.APPROVE_OPTION){
             logFile = fc.getSelectedFile();
             String thisLine;
@@ -500,87 +528,36 @@ public class Handler {
                 {
                     if (thisLine.contains("$")) {
                         readMode = true;
-                        i=0;
-                        while(loadObjects.size()!=0)
-                            loadObjects.removeLast();
+                        while(data.size()!=0)
+                            data.removeLast();
                     }
                     if(thisLine.contains("#"))
                     {
                         readMode = false;
-                        UniverseButton b = new UniverseButton("Map"+String.valueOf(universeButton.size()+1),this,game, loadObjects, data);
+                        UniverseButton b = new UniverseButton("Map"+String.valueOf(universeButton.size()+1),this,game, data);
                         b.setBounds((universeButton.size()*100)%800+100,(universeButton.size()/10*100)+200,50,50);
                         universeButton.add(b);
                         game.getFrame().add(b,0);
                     }
                     if (readMode) {
                         String[] set = thisLine.split(",");
-                        int x, y, tankSize,count;
-                        double degree, omega, orbitOmega, orbitTrackAngle, orbitAngle, volx, voly;
-                        Rectangle orbitTrack;
-                        GameObject.ObjectType type = GameObject.ObjectType.EARTH;
+                        LinkedList<String> d = new LinkedList<>();
                         switch (set[0])
                         {
                             case "Planet":
-                                x = Integer.parseInt(set[1]);
-                                y = Integer.parseInt(set[2]);
-                                Planet planet;
-                                switch (set[3])
-                                {
-                                    case "JUPITER":
-                                        type = GameObject.ObjectType.JUPITER;
-                                        break;
-                                    case "MARS":
-                                        type = GameObject.ObjectType.MARS;
-                                        break;
-                                    case "MOON":
-                                        type = GameObject.ObjectType.MOON;
-                                        break;
-                                    case "EARTH":
-                                        type = GameObject.ObjectType.EARTH;
-                                        break;
-                                    case "VENUS":
-                                        type = GameObject.ObjectType.VENUS;
-                                        break;
-                                    case "MERCURY":
-                                        type = GameObject.ObjectType.MERCURY;
-                                        break;
-                                    case "SATURN":
-                                        type = GameObject.ObjectType.SATURN;
-                                        break;
-                                    case "NEPTUNE":
-                                        type = GameObject.ObjectType.NEPTUNE;
-                                        break;
-                                    case "URANUS":
-                                        type = GameObject.ObjectType.URANUS;
-                                        break;
-                                }
-                                planet = new Planet(x, y, ID.Planet, type, this);
-                                data[i] =set;
-                                i++;
-                                loadObjects.add(planet);
+                                for(String s : set)
+                                    d.add(s);
+                                data.add(d);
                                 break;
                             case "Rocket":
-                                Rocket rocket;
-                                x = Integer.parseInt(set[1]);
-                                y = Integer.parseInt(set[2]);
-                                tankSize = Integer.parseInt(set[3]);
-                                rocket = new Rocket(x, y,tankSize,ID.Rocket, GameObject.ObjectType.ROCKET,this);
-                                data[i] = set;
-                                i++;
-                                loadObjects.add(rocket);
+                                for(String s : set)
+                                    d.add(s);
+                                data.add(d);
                                 break;
                             case "Asteroid":
-                                count = Integer.parseInt(set[1]);
-                                x = Integer.parseInt(set[2])+64;
-                                y = Integer.parseInt(set[3])+64;
-                                Asteroid asteroid = new Asteroid(x, y, ID.Asteroid, this);
-                                for(int j = 1 ; j<count ; j++)
-                                {
-                                    x = Integer.parseInt(set[2*j+2]);
-                                    y = Integer.parseInt(set[2*j+3]);
-                                    asteroid.addAsteroid(x,y);
-                                }
-                                loadObjects.add(asteroid);
+                                for(String s : set)
+                                    d.add(s);
+                                data.add(d);
                                 break;
                         }
                     }
