@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.LinkedList;
 
 public class Handler {
-    Game game;
+    private Game game;
     public LinkedList<GameObject> objects;
     public LinkedList<CustomButton> buttons;
     private Rocket rocketObject;
@@ -26,11 +26,11 @@ public class Handler {
     private Checkbox showRadar,planetCenter;
     private Label selectLabel;
     private Choice seleItem;
-
     public LinkedList<GameObject> loadObjects;
     boolean readMode = false;
-    File logFile;
-    String data[][] = new String [100][11];
+    private File logFile;
+    private String data[][] = new String [100][11];
+    private static final double gravityConstant = 850;//6.674×10−11
 
     public Handler(Game game){
         this.game = game;
@@ -123,6 +123,7 @@ public class Handler {
                 game.removeAll();
                 setStatus(Status.EDIT);
                 game.buildEditMode();
+                addObject(new Rocket(0,0,100,ID.Rocket, GameObject.ObjectType.ROCKET, Handler.this));
             }
         });
 
@@ -176,7 +177,7 @@ public class Handler {
             if(tempObject.getId()==ID.Planet && status==Status.PLAY && rocketObject!=null)
             {
                 Planet planet = (Planet)tempObject;
-                double g = 800, M=planet.getPlanetMass(), t=1;
+                double g = gravityConstant, M=planet.getPlanetMass();
                 double dx, dy, dis;
                 double a, ax, ay;
                 dx = tempObject.getX() - rocketObject.getX();
@@ -186,8 +187,8 @@ public class Handler {
                     a = g * M / (dis*dis);
                     ax = a * (dx / dis);
                     ay = a * (dy / dis);
-                    rocketObject.setVolx(rocketObject.getVolx() + ax*t);
-                    rocketObject.setVoly(rocketObject.getVoly() + ay*t);
+                    rocketObject.setVolx(rocketObject.getVolx() + ax);
+                    rocketObject.setVoly(rocketObject.getVoly() + ay);
                 }
             }
 
@@ -225,11 +226,47 @@ public class Handler {
             }
         }
 
-        for(GameObject tempObject : objects){
-            tempObject.render(g,at);
+        synchronized(this){
+            for (GameObject tempObject : objects) {
+                if (tempObject.getId() != ID.Rocket)
+                    tempObject.render(g, at);
+            }
+            for (CustomButton button : buttons) {
+                button.render(g, at);
+            }
         }
-        for(CustomButton button : buttons){
-            button.render(g,at);
+
+        if(rocketObject!=null){
+            Point[] p = new Point[rocketObject.getEstimateLine().length];
+            for(int i=0;i<p.length;i++) {
+                p[i] = new Point();
+            }
+            p[0].setLocation(rocketObject.getPosition());
+            Point.Double v = new Point.Double();
+            v.setLocation(rocketObject.getVelocity());
+            for(int i=1;i<p.length;i++){
+                p[i].setLocation(p[i-1].getLocation());
+                for(GameObject object:objects){
+                    if(object.getId()==ID.Planet && status==Status.PLAY && rocketObject!=null) {
+                        Planet planet = (Planet) object;
+                        double M = planet.getPlanetMass();
+                        double dx, dy, dis;
+                        double a, ax, ay;
+                        dx = object.getX() - p[i].getX();
+                        dy = object.getY() - p[i].getY();
+                        dis = Math.sqrt(dx * dx + dy * dy);
+                        if (dis > 10) {
+                            a = gravityConstant * M / (dis * dis);
+                            ax = a * (dx / dis);
+                            ay = a * (dy / dis);
+                            v.setLocation(v.getX()+ax,v.getY()+ay);
+                        }
+                    }
+                }
+                p[i].setLocation(p[i].getX()+v.getX(),p[i].getY()+v.getY());
+            }
+            rocketObject.setEstimateLine(p);
+            rocketObject.render(g,at);
         }
 
     }
@@ -286,7 +323,7 @@ public class Handler {
         }
     }
 
-    public void addButton(CustomButton button){
+    public synchronized void addButton(CustomButton button){
         this.buttons.add(button);
     }
 
@@ -298,7 +335,7 @@ public class Handler {
         return rocketObject;
     }
 
-    public void addObject(GameObject object){
+    public synchronized void addObject(GameObject object){
         if(object.getId()==ID.Rocket){
             rocketObject = (Rocket)object;
         }
@@ -321,18 +358,18 @@ public class Handler {
 
     public void removeAllObjects(){
         while(objects.size()!=0){
-            if(objects.getLast().getId()== ID.Rocket){
-                Rocket rocket = (Rocket)objects.getLast();
-                rocket.removeComponent();
-            }else {
-                objects.getLast().removeComponent();
-            }
+            objects.getLast().removeComponent();
             objects.removeLast();
         }
         while(buttons.size()!=0){
             buttons.getLast().removeComponent();
             buttons.removeLast();
         }
+        if(rocketObject!=null){
+            rocketObject.removeComponent();
+            rocketObject=null;
+        }
+        setSelectItem(null);
     }
 
     public void removeObject(GameObject object,Point2D LeftUpDown, Point2D RightDownPoint){

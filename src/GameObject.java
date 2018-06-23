@@ -4,6 +4,7 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -80,7 +81,6 @@ public abstract class GameObject {
                 else {
                     orbitCenterObject = centerChoice.get(i-1);
                 }
-
             }
         });
         orbitCenterChoice.add("None");
@@ -239,6 +239,10 @@ public abstract class GameObject {
 
     public double getVoly() {
         return voly;
+    }
+
+    public Point.Double getVelocity(){
+        return new Point.Double(getVolx(),getVoly());
     }
 
     public double getDegree() {

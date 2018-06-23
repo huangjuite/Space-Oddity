@@ -18,16 +18,18 @@ public class UniverseButton extends Button implements ActionListener {
         this.data = data;
         this.handler = handler;
         this.game = game;
-        //我加的
-        for(GameObject map :loadMap)
-            this.loadMap.add(map);
+        for(GameObject obj : loadMap){
+            this.loadMap.add(obj);
+        }
         setBackground(Color.gray);
         addActionListener(this);
     }
 
     public void constructUniverse(){
+        Rocket rocket = null;
         i=0;
         for(GameObject object : loadMap) {
+            System.out.println(object.getType());
             double degree, omega, orbitOmega, orbitTrackAngle, orbitAngle, volx, voly;
             if(object.getId() != ID.Asteroid)
             {
@@ -52,18 +54,27 @@ public class UniverseButton extends Button implements ActionListener {
                 object.setVoly(voly);
                 i++;
             }
+
             if(object.getId()== ID.Rocket){
-                ((Rocket)object).setComponentsVisible(true);
+                if(handler.getStatus()== Handler.Status.PLAY) {
+                    ((Rocket) object).setComponentsVisible(false);
+                }
+                else if(handler.getStatus()== Handler.Status.EDIT){
+                    ((Rocket) object).setComponentsVisible(true);
+                }
+                rocket = (Rocket) object;
+            }else{
+                object.setComponentsVisible(false);
             }
             handler.addObject(object);
         }
+        rocket.updateDestChoice();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
         game.removeAll();
-        constructUniverse();
         if(handler.getBackToStatus()==Handler.Status.PLAY) {
             handler.setStatus(Handler.Status.PLAY);
             game.buildPlayMode();
@@ -72,5 +83,6 @@ public class UniverseButton extends Button implements ActionListener {
             handler.setStatus(Handler.Status.EDIT);
             game.buildEditMode();
         }
+        constructUniverse();
     }
 }

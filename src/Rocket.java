@@ -5,26 +5,32 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.LinkedList;
 
 public class Rocket extends GameObject {
     private BufferedImage rocketImage[];
-    private BufferedImage pinImage;
+    private BufferedImage startPinImage,destPinImage;
     private int boostStatus=0;
     private double rocketImageScale = 0.8;
     private boolean locating = false;
     private int rocketImageSize;
     private int fule,tankSize;
-    private Scrollbar tanksizeBar;
+    private Scrollbar tankSizeBar;
     private Choice factor;
-    private Label tankSizeLabel;
+    private Label tankSizeLabel,destLabel;
     private TextField amountField;
+    private Point[] estimateLine;
+    private Choice destChoice;
+    private GameObject destinationPlanet,startingPlanet;
+    private LinkedList<GameObject> destChoiceList;
 
     public Rocket(int x, int y,int tankSize, ID id,ObjectType type,Handler handler) {
         super(x, y, id,type,handler);
         this.tankSize = tankSize;
+        destChoiceList = new LinkedList<>();
         rocketImage = new BufferedImage[5];
         try {
             for(int i=0;i<5;i++){
@@ -32,15 +38,23 @@ public class Rocket extends GameObject {
                 rocketImage[i] = resizeImage(image,rocketImageScale);
             }
             BufferedImage image = ImageIO.read(getClass().getResource("pin.png"));
-            pinImage = resizeImage(image,1);
+            startPinImage = resizeImage(image,0.1);
+            BufferedImage image1 = ImageIO.read(getClass().getResource("pin_destination.png"));
+            destPinImage = resizeImage(image1,0.1);
         }
         catch (IOException e){
             e.printStackTrace();
         }
         rocketImageSize = rocketImage[0].getWidth();
+        estimateLine = new Point[200];
+        for(int i=0;i<estimateLine.length;i++){
+            estimateLine[i] = new Point();
+        }
 
-
-        tanksizeBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,10000);
+        destChoice = new Choice();
+        updateDestChoice();
+        destLabel = new Label("Destination:");
+        tankSizeBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,10000);
         factor = new Choice();
         amountField = new TextField();
         tankSizeLabel = new Label("Energy");
@@ -51,37 +65,42 @@ public class Rocket extends GameObject {
         factor.add("x8");
         factor.add("x16");
         factor.add("x32");
-        tanksizeBar.setVisible(false);
+        destLabel.setVisible(false);
+        destChoice.setVisible(false);
+        tankSizeBar.setVisible(false);
         factor.setVisible(false);
         amountField.setVisible(false);
         tankSizeLabel.setVisible(false);
 
-        tanksizeBar.setBackground(Color.gray);
+        destChoice.setBackground(Color.gray);
+        destLabel.setBackground(Color.gray);
+        tankSizeBar.setBackground(Color.gray);
         factor.setBackground(Color.gray);
         amountField.setBackground(Color.white);
         tankSizeLabel.setBackground(Color.gray);
 
-        tanksizeBar.setBounds(350,30,300,20);
+        destChoice.setBounds(380,50,100,20);
+        destLabel.setBounds(300,50,80,20);
+        tankSizeBar.setBounds(350,30,300,20);
         factor.setBounds(650,30,100,20);
         amountField.setBounds(750,30,70,20);
         tankSizeLabel.setBounds(300,30,50,20);
 
-        handler.getGame().getFrame().add(tanksizeBar,0);
+        handler.getGame().getFrame().add(destChoice,0);
+        handler.getGame().getFrame().add(destLabel,0);
+        handler.getGame().getFrame().add(tankSizeBar,0);
         handler.getGame().getFrame().add(tankSizeLabel,0);
         handler.getGame().getFrame().add(factor,0);
         handler.getGame().getFrame().add(amountField,0);
 
         if(handler.getStatus()== Handler.Status.EDIT){
-            tanksizeBar.setVisible(true);
-            factor.setVisible(true);
-            amountField.setVisible(true);
-            tankSizeLabel.setVisible(true);
+            setComponentsVisible(true);
         }
 
-        tanksizeBar.addAdjustmentListener(new AdjustmentListener() {
+        tankSizeBar.addAdjustmentListener(new AdjustmentListener() {
             @Override
             public void adjustmentValueChanged(AdjustmentEvent e) {
-                int num = tanksizeBar.getValue()*(int)Math.pow(2,factor.getSelectedIndex());
+                int num = tankSizeBar.getValue()*(int)Math.pow(2,factor.getSelectedIndex());
                 amountField.setText(Integer.toString(num));
                 setTankSize(num);
             }
@@ -89,9 +108,21 @@ public class Rocket extends GameObject {
         factor.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                int num = tanksizeBar.getValue()*(int)Math.pow(2,factor.getSelectedIndex());
+                int num = tankSizeBar.getValue()*(int)Math.pow(2,factor.getSelectedIndex());
                 amountField.setText(Integer.toString(num));
                 setTankSize(num);
+            }
+        });
+        destChoice.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                int index = destChoice.getSelectedIndex();
+                if(index!=0){
+                    destinationPlanet = destChoiceList.get(index-1);
+                }
+                else{
+                    destinationPlanet = null;
+                }
             }
         });
     }
@@ -99,21 +130,57 @@ public class Rocket extends GameObject {
     @Override
     public void removeComponent(){
         super.removeComponent();
-        handler.getGame().getFrame().remove(tanksizeBar);
+        handler.getGame().getFrame().remove(tankSizeBar);
         handler.getGame().getFrame().remove(tankSizeLabel);
         handler.getGame().getFrame().remove(factor);
         handler.getGame().getFrame().remove(amountField);
+        handler.getGame().getFrame().remove(destLabel);
+        handler.getGame().getFrame().remove(destChoice);
     }
 
     @Override
     public void setComponentsVisible(boolean b){
-        super.setComponentsVisible(b);
-        tanksizeBar.setVisible(b);
+        super.setComponentsVisible(false);
+        destLabel.setVisible(b);
+        destChoice.setVisible(b);
+        tankSizeBar.setVisible(b);
         factor.setVisible(b);
         amountField.setVisible(b);
         tankSizeLabel.setVisible(b);
     }
 
+    public GameObject getDestinationPlanet() {
+        return destinationPlanet;
+    }
+
+    public void setDestinationPlanet(GameObject destinationPlanet) {
+        this.destinationPlanet = destinationPlanet;
+    }
+
+    public GameObject getStartingPlanet() {
+        return startingPlanet;
+    }
+
+    public void setStartingPlanet(GameObject startingPlanet) {
+        this.startingPlanet = startingPlanet;
+    }
+
+    public void updateDestChoice(){
+        destChoiceList.removeAll(destChoiceList);
+        for(GameObject obj:handler.objects){
+            if(obj!=this && obj.getId()!=ID.Asteroid){
+                destChoiceList.add(obj);
+            }
+        }
+
+        destChoice.removeAll();
+        destChoice.add("0:None");
+        int i=1;
+        for(GameObject object:destChoiceList){
+            destChoice.add(i+":"+object.getType().toString());
+            i++;
+        }
+    }
 
     public BufferedImage getRocketImage(){
         return rocketImage[0];
@@ -125,6 +192,16 @@ public class Rocket extends GameObject {
         }
         else {
             boostStatus &= ~(1<<n);
+        }
+    }
+
+    public Point2D[] getEstimateLine() {
+        return estimateLine;
+    }
+
+    public void setEstimateLine(Point[] estimateLine) {
+        for(int i=0;i<estimateLine.length;i++){
+            this.estimateLine[i] = estimateLine[i] ;
         }
     }
 
@@ -148,6 +225,15 @@ public class Rocket extends GameObject {
     public void render(Graphics g,AffineTransform at) {
         Graphics2D g2d = (Graphics2D) g;
 
+        if(destinationPlanet!=null){
+            AffineTransform nat = new AffineTransform();
+            nat.translate(destinationPlanet.getX()*at.getScaleX()-startPinImage.getWidth()/2,
+                    destinationPlanet.getY()*at.getScaleY()-startPinImage.getHeight()
+                            -(((Planet)destinationPlanet).getRadius()+100)*at.getScaleY());
+            nat.translate(at.getTranslateX(),at.getTranslateY());
+            g2d.drawImage(destPinImage,nat,null);
+        }
+
         if(handler.getStatus()==Handler.Status.EDIT){
             omega = 0.4;
             AffineTransform nat = new AffineTransform();
@@ -158,9 +244,9 @@ public class Rocket extends GameObject {
                     rocketImageSize/2);
             g2d.drawImage(rocketImage[0],nat,null);
             nat.setToIdentity();
-            nat.translate(-pinImage.getWidth()/2,-pinImage.getHeight());
-            nat.preConcatenate(at);
-            g2d.drawImage(pinImage,nat,null);
+            nat.translate(-startPinImage.getWidth()/2,-startPinImage.getHeight());
+            nat.translate(at.getTranslateX(),at.getTranslateY());
+            g2d.drawImage(startPinImage,nat,null);
         }
         else {
             AffineTransform newat = AffineTransform.getTranslateInstance(
@@ -177,8 +263,19 @@ public class Rocket extends GameObject {
                     g2d.drawImage(rocketImage[i],newat,null);
                 }
             }
+
             if(locating) drawRadar(g2d,at);
             drawHUD(g2d);
+
+            g2d.setColor(Color.white);
+            g2d.setStroke(new BasicStroke((float)1));
+            for(int i=0;i<estimateLine.length;i++){
+                if(i%5==0){
+                    g2d.drawRect((int)(estimateLine[i].getX()*at.getScaleX()+at.getTranslateX()),
+                            (int)(estimateLine[i].getY()*at.getScaleY()+at.getTranslateY()),
+                            1,1);
+                }
+            }
         }
 
     }
@@ -229,8 +326,6 @@ public class Rocket extends GameObject {
                 g2d.drawImage(rocketImage[i],newat,null);
             }
         }
-
-
     }
 
     public int getFule() {
