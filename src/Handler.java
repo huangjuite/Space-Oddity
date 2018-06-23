@@ -26,10 +26,8 @@ public class Handler {
     private Checkbox showRadar,planetCenter;
     private Label selectLabel;
     private Choice seleItem;
-    public LinkedList<GameObject> loadObjects;
     boolean readMode = false;
     private File logFile;
-    private String data[][] = new String [100][11];
     private static final double gravityConstant = 850;//6.674×10−11
     private boolean gamePass;
 
@@ -38,14 +36,16 @@ public class Handler {
         objects = new LinkedList<>();
         buttons = new LinkedList<>();
         universeButton = new LinkedList<>();
-        loadObjects = new LinkedList<>();
 
         saveButton = new Button("Save");
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    saveGame();
+                    if(status==Status.CHOOSING)
+                        saveGame();
+                   else
+                        creatingButton();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -466,6 +466,26 @@ public class Handler {
         return false;
     }
 
+    public void creatingButton()
+    {
+        LinkedList<LinkedList<String>> data = new LinkedList<>();
+        String currentString;
+        for(int i=0; i<objects.size() ; i++)
+        {
+            currentString = objects.get(i).toString();
+            String[] set = currentString.split(",");
+            LinkedList<String> d = new LinkedList<>();
+            for(String s :set)
+                d.add(s);
+            data.add(d);
+        }
+        UniverseButton b = new UniverseButton("Map"+String.valueOf(universeButton.size()+1),this,game, data);
+        b.setBounds((universeButton.size()*100)%800+100,(universeButton.size()/10*100)+200,50,50);
+        b.setVisible(false);
+        universeButton.add(b);
+        game.getFrame().add(b,0);
+    }
+
     public void saveGame() throws IOException
     {
         int useSelection = JFileChooser.APPROVE_OPTION;
@@ -476,25 +496,32 @@ public class Handler {
             if(useSelection == JFileChooser.APPROVE_OPTION)
                 logFile = fc.getSelectedFile();
         }
-        if(useSelection == JFileChooser.APPROVE_OPTION)
-        {
-            if(!logFile.getAbsolutePath().endsWith(".txt"))
-            {
-                File t = new File(logFile.getAbsolutePath()+".txt");
+        if(useSelection == JFileChooser.APPROVE_OPTION) {
+            if (!logFile.getAbsolutePath().endsWith(".txt")) {
+                File t = new File(logFile.getAbsolutePath() + ".txt");
                 logFile = t;
             }
-            FileWriter fileWriter = new FileWriter(logFile,true);
+            FileWriter fileWriter = new FileWriter(logFile, true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write("$"+Integer.toString(universeButton.size()+1));
-            bufferedWriter.newLine();
-            for(GameObject gameObject:objects)
-            {
-                bufferedWriter.write(gameObject.toString());
+            for (int i = 0; i < universeButton.size(); i++) {
+                bufferedWriter.write("$" + Integer.toString(i+ 1));
                 bufferedWriter.newLine();
+                LinkedList<LinkedList<String>> data = universeButton.get(i).getData();
+                for(int j = 0 ; j<data.size() ; j++)
+                {
+                    String string = "";
+                    string += data.get(j).get(0);
+                    for(int k=1 ; k<data.get(j).size() ; k++)
+                    {
+                        string+=","+data.get(j).get(k);
+                    }
+                    bufferedWriter.write(string);
+                    bufferedWriter.newLine();
+                }
+                bufferedWriter.write("#" + Integer.toString(i + 1));
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
             }
-            bufferedWriter.write("#"+Integer.toString(universeButton.size()+1));
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
         }
     }
 
@@ -502,7 +529,7 @@ public class Handler {
     {
         JFileChooser fc = new JFileChooser();
         int user = fc.showOpenDialog(game.getFrame());
-        int i=0;
+        LinkedList<LinkedList<String>> data = new LinkedList<>();
         if(user == JFileChooser.APPROVE_OPTION){
             logFile = fc.getSelectedFile();
             String thisLine;
@@ -513,87 +540,36 @@ public class Handler {
                 {
                     if (thisLine.contains("$")) {
                         readMode = true;
-                        i=0;
-                        while(loadObjects.size()!=0)
-                            loadObjects.removeLast();
+                        while(data.size()!=0)
+                            data.removeLast();
                     }
                     if(thisLine.contains("#"))
                     {
                         readMode = false;
-                        UniverseButton b = new UniverseButton("Map"+String.valueOf(universeButton.size()+1),this,game, loadObjects, data);
+                        UniverseButton b = new UniverseButton("Map"+String.valueOf(universeButton.size()+1),this,game, data);
                         b.setBounds((universeButton.size()*100)%800+100,(universeButton.size()/10*100)+200,50,50);
                         universeButton.add(b);
                         game.getFrame().add(b,0);
                     }
                     if (readMode) {
                         String[] set = thisLine.split(",");
-                        int x, y, tankSize,count;
-                        double degree, omega, orbitOmega, orbitTrackAngle, orbitAngle, volx, voly;
-                        Rectangle orbitTrack;
-                        GameObject.ObjectType type = GameObject.ObjectType.EARTH;
+                        LinkedList<String> d = new LinkedList<>();
                         switch (set[0])
                         {
                             case "Planet":
-                                x = Integer.parseInt(set[1]);
-                                y = Integer.parseInt(set[2]);
-                                Planet planet;
-                                switch (set[3])
-                                {
-                                    case "JUPITER":
-                                        type = GameObject.ObjectType.JUPITER;
-                                        break;
-                                    case "MARS":
-                                        type = GameObject.ObjectType.MARS;
-                                        break;
-                                    case "MOON":
-                                        type = GameObject.ObjectType.MOON;
-                                        break;
-                                    case "EARTH":
-                                        type = GameObject.ObjectType.EARTH;
-                                        break;
-                                    case "VENUS":
-                                        type = GameObject.ObjectType.VENUS;
-                                        break;
-                                    case "MERCURY":
-                                        type = GameObject.ObjectType.MERCURY;
-                                        break;
-                                    case "SATURN":
-                                        type = GameObject.ObjectType.SATURN;
-                                        break;
-                                    case "NEPTUNE":
-                                        type = GameObject.ObjectType.NEPTUNE;
-                                        break;
-                                    case "URANUS":
-                                        type = GameObject.ObjectType.URANUS;
-                                        break;
-                                }
-                                planet = new Planet(x, y, ID.Planet, type, this);
-                                data[i] =set;
-                                i++;
-                                loadObjects.add(planet);
+                                for(String s : set)
+                                    d.add(s);
+                                data.add(d);
                                 break;
                             case "Rocket":
-                                Rocket rocket;
-                                x = Integer.parseInt(set[1]);
-                                y = Integer.parseInt(set[2]);
-                                tankSize = Integer.parseInt(set[3]);
-                                rocket = new Rocket(x, y,tankSize,ID.Rocket, GameObject.ObjectType.ROCKET,this);
-                                data[i] = set;
-                                i++;
-                                loadObjects.add(rocket);
+                                for(String s : set)
+                                    d.add(s);
+                                data.add(d);
                                 break;
                             case "Asteroid":
-                                count = Integer.parseInt(set[1]);
-                                x = Integer.parseInt(set[2])+64;
-                                y = Integer.parseInt(set[3])+64;
-                                Asteroid asteroid = new Asteroid(x, y, ID.Asteroid, this);
-                                for(int j = 1 ; j<count ; j++)
-                                {
-                                    x = Integer.parseInt(set[2*j+2]);
-                                    y = Integer.parseInt(set[2*j+3]);
-                                    asteroid.addAsteroid(x,y);
-                                }
-                                loadObjects.add(asteroid);
+                                for(String s : set)
+                                    d.add(s);
+                                data.add(d);
                                 break;
                         }
                     }

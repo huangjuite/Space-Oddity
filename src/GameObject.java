@@ -149,6 +149,10 @@ public abstract class GameObject {
             }
         }
         orbitCenterChoice.select(index);
+        trackOmegaBar.setValue((int)omega);
+        trackAbar.setValue((int)orbitTrack.getWidth());
+        trackBbar.setValue((int)orbitTrack.getHeight());
+        trackAngleBar.setValue((int)orbitAngle);
     }
 
     public void setComponentsVisible(boolean b){
@@ -363,6 +367,28 @@ public abstract class GameObject {
         int py = (int)(at.getTranslateY()+(y-radarRadius)*at.getScaleY());
         int size = (int)(2*radarRadius*at.getScaleX());
         g2d.drawOval(px,py,size,size);
+    }
+
+    public void drawBounds(Graphics2D g2d,AffineTransform at){
+        Rectangle rec = getBounds();
+        int px = (int)(at.getTranslateX()+(x-rec.getWidth()/2-200)*at.getScaleX());
+        int py = (int)(at.getTranslateY()+(y-rec.getHeight()/2-200)*at.getScaleY());
+        Stroke dashed = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                0, new float[]{10}, 0);
+        g2d.setStroke(dashed);
+        g2d.setColor(Color.white);
+        g2d.drawRoundRect(px,py,(int)((rec.getWidth()+400)*at.getScaleX()),
+                (int)((rec.getHeight()+400)*at.getScaleY()),
+                (int)(100*at.getScaleY()),(int)(100*at.getScaleY()));
+    }
+
+    public void setOrbitCenterChoice(int x)
+    {
+        orbitCenterChoice.select(x);
+        if(x==0)
+            orbitCenterObject = null;
+        else
+            orbitCenterObject = centerChoiceList.get(x-1);
     }
 
     public abstract Rectangle getBounds();
