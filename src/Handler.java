@@ -344,6 +344,9 @@ public class Handler {
             gameObject.update();
         }
         updateSelectItem();
+        if(rocketObject!=null){
+            rocketObject.updateDestChoice();
+        }
     }
 
     private void updateSelectItem(){

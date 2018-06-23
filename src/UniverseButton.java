@@ -57,10 +57,10 @@ public class UniverseButton extends Button implements ActionListener {
 
             if(object.getId()== ID.Rocket){
                 if(handler.getStatus()== Handler.Status.PLAY) {
-                    ((Rocket) object).setComponentsVisible(false);
+                    ((Rocket)object).setComponentsVisible(false);
                 }
                 else if(handler.getStatus()== Handler.Status.EDIT){
-                    ((Rocket) object).setComponentsVisible(true);
+                    ((Rocket)object).setComponentsVisible(true);
                 }
                 rocket = (Rocket) object;
             }else{

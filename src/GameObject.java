@@ -4,7 +4,6 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -30,7 +29,7 @@ public abstract class GameObject {
     protected Label label[];
     protected Choice orbitCenterChoice;
     protected GameObject orbitCenterObject;
-    protected LinkedList<GameObject> centerChoice;
+    protected LinkedList<GameObject> centerChoiceList;
 
     public GameObject(int x,int y,ID id,ObjectType type,Handler handler){
         this.x = x;
@@ -79,7 +78,7 @@ public abstract class GameObject {
                     orbitCenterObject = null;
                 }
                 else {
-                    orbitCenterObject = centerChoice.get(i-1);
+                    orbitCenterObject = centerChoiceList.get(i-1);
                 }
             }
         });
@@ -98,14 +97,7 @@ public abstract class GameObject {
         label[4].setBounds(200,handler.getGame().getHeight()-45,100,15);
         orbitCenterChoice.setBounds(300,handler.getGame().getHeight()-45,200,15);
 
-        handler.getGame().getFrame().add(trackOmegaBar,0);
-        handler.getGame().getFrame().add(trackAbar,0);
-        handler.getGame().getFrame().add(trackBbar,0);
-        handler.getGame().getFrame().add(trackAngleBar,0);
-        handler.getGame().getFrame().add(orbitCenterChoice,0);
-        for(Label l:label){
-            handler.getGame().getFrame().add(l,0);
-        }
+        addComponent();
 
     }
 
@@ -137,13 +129,13 @@ public abstract class GameObject {
     }
 
     void update(){
-        centerChoice = new LinkedList<GameObject>();
+        centerChoiceList = new LinkedList<GameObject>();
         orbitCenterChoice.removeAll();
         orbitCenterChoice.add("0:None");
         int i=1;
         for(GameObject object:handler.objects){
             if(object!=this){
-                centerChoice.add(object);
+                centerChoiceList.add(object);
                 orbitCenterChoice.add(i+":"+object.getType().toString());
                 i++;
             }
@@ -187,6 +179,17 @@ public abstract class GameObject {
         handler.getGame().getFrame().remove(trackBbar);
         handler.getGame().getFrame().remove(trackAngleBar);
         handler.getGame().getFrame().remove(orbitCenterChoice);
+    }
+
+    public void addComponent(){
+        for(Label l:label){
+            handler.getGame().getFrame().add(l,0);
+        }
+        handler.getGame().getFrame().add(trackOmegaBar,0);
+        handler.getGame().getFrame().add(trackAbar,0);
+        handler.getGame().getFrame().add(trackBbar,0);
+        handler.getGame().getFrame().add(trackAngleBar,0);
+        handler.getGame().getFrame().add(orbitCenterChoice,0);
     }
 
     public Point getPosition(){

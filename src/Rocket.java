@@ -127,6 +127,7 @@ public class Rocket extends GameObject {
         });
     }
 
+
     @Override
     public void removeComponent(){
         super.removeComponent();
