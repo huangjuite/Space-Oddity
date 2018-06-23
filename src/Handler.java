@@ -229,7 +229,7 @@ public class Handler {
             }
         }
 
-        synchronized(this){
+        synchronized(this) {
             for (GameObject tempObject : objects) {
                 if (tempObject.getId() != ID.Rocket)
                     tempObject.render(g, at);
@@ -237,19 +237,17 @@ public class Handler {
             for (CustomButton button : buttons) {
                 button.render(g, at);
             }
-        }
 
-        if(rocketObject!=null){
-            Point[] p = new Point[rocketObject.getEstimateLine().length];
-            for(int i=0;i<p.length;i++) {
-                p[i] = new Point();
-            }
-            p[0].setLocation(rocketObject.getPosition());
-            Point.Double v = new Point.Double();
-            v.setLocation(rocketObject.getVelocity());
-            for(int i=1;i<p.length;i++){
-                p[i].setLocation(p[i-1].getLocation());
-                synchronized (this) {
+            if (rocketObject != null) {
+                Point[] p = new Point[rocketObject.getEstimateLine().length];
+                for (int i = 0; i < p.length; i++) {
+                    p[i] = new Point();
+                }
+                p[0].setLocation(rocketObject.getPosition());
+                Point.Double v = new Point.Double();
+                v.setLocation(rocketObject.getVelocity());
+                for (int i = 1; i < p.length; i++) {
+                    p[i].setLocation(p[i - 1].getLocation());
                     for (GameObject object : objects) {
                         if (object.getId() == ID.Planet && status == Status.PLAY && rocketObject != null) {
                             Planet planet = (Planet) object;
@@ -269,9 +267,9 @@ public class Handler {
                     }
                     p[i].setLocation(p[i].getX() + v.getX(), p[i].getY() + v.getY());
                 }
+                rocketObject.setEstimateLine(p);
+                rocketObject.render(g, at);
             }
-            rocketObject.setEstimateLine(p);
-            rocketObject.render(g,at);
         }
 
     }
@@ -501,7 +499,7 @@ public class Handler {
                 File t = new File(logFile.getAbsolutePath() + ".txt");
                 logFile = t;
             }
-            FileWriter fileWriter = new FileWriter(logFile, true);
+            FileWriter fileWriter = new FileWriter(logFile, false);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             for (int i = 0; i < universeButton.size(); i++) {
                 bufferedWriter.write("$" + Integer.toString(i+ 1));
