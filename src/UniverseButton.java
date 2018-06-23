@@ -26,7 +26,7 @@ public class UniverseButton extends Button implements ActionListener {
     }
 
     public void constructUniverse(){
-        Rocket rocket = null;
+
         i=0;
         for(GameObject object : loadMap) {
             System.out.println(object.getType());
@@ -52,6 +52,7 @@ public class UniverseButton extends Button implements ActionListener {
                 object.setOrbitAngle(orbitAngle);
                 object.setVolx(volx);
                 object.setVoly(voly);
+                object.addComponent();
                 i++;
             }
 
@@ -62,13 +63,18 @@ public class UniverseButton extends Button implements ActionListener {
                 else if(handler.getStatus()== Handler.Status.EDIT){
                     ((Rocket)object).setComponentsVisible(true);
                 }
-                rocket = (Rocket) object;
             }else{
                 object.setComponentsVisible(false);
             }
             handler.addObject(object);
         }
-        rocket.updateDestChoice();
+
+        for(GameObject object:loadMap){
+            if(object.getId()== ID.Rocket) {
+                ((Rocket) object).updateDestChoice();
+                break;
+            }
+        }
     }
 
     @Override

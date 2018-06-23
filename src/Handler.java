@@ -31,6 +31,7 @@ public class Handler {
     private File logFile;
     private String data[][] = new String [100][11];
     private static final double gravityConstant = 850;//6.674×10−11
+    private boolean gamePass;
 
     public Handler(Game game){
         this.game = game;
@@ -170,6 +171,8 @@ public class Handler {
                 Planet planet = (Planet)tempObject;
                 if(detectCollision(rocketObject,planet)){
                     rocketObject.setPosition(0,0);
+                    rocketObject.setGameFinish(true);
+                    setGamePass(false);
                 }
             }
 
@@ -246,24 +249,26 @@ public class Handler {
             v.setLocation(rocketObject.getVelocity());
             for(int i=1;i<p.length;i++){
                 p[i].setLocation(p[i-1].getLocation());
-                for(GameObject object:objects){
-                    if(object.getId()==ID.Planet && status==Status.PLAY && rocketObject!=null) {
-                        Planet planet = (Planet) object;
-                        double M = planet.getPlanetMass();
-                        double dx, dy, dis;
-                        double a, ax, ay;
-                        dx = object.getX() - p[i].getX();
-                        dy = object.getY() - p[i].getY();
-                        dis = Math.sqrt(dx * dx + dy * dy);
-                        if (dis > 10) {
-                            a = gravityConstant * M / (dis * dis);
-                            ax = a * (dx / dis);
-                            ay = a * (dy / dis);
-                            v.setLocation(v.getX()+ax,v.getY()+ay);
+                synchronized (this) {
+                    for (GameObject object : objects) {
+                        if (object.getId() == ID.Planet && status == Status.PLAY && rocketObject != null) {
+                            Planet planet = (Planet) object;
+                            double M = planet.getPlanetMass();
+                            double dx, dy, dis;
+                            double a, ax, ay;
+                            dx = object.getX() - p[i].getX();
+                            dy = object.getY() - p[i].getY();
+                            dis = Math.sqrt(dx * dx + dy * dy);
+                            if (dis > 10) {
+                                a = gravityConstant * M / (dis * dis);
+                                ax = a * (dx / dis);
+                                ay = a * (dy / dis);
+                                v.setLocation(v.getX() + ax, v.getY() + ay);
+                            }
                         }
                     }
+                    p[i].setLocation(p[i].getX() + v.getX(), p[i].getY() + v.getY());
                 }
-                p[i].setLocation(p[i].getX()+v.getX(),p[i].getY()+v.getY());
             }
             rocketObject.setEstimateLine(p);
             rocketObject.render(g,at);
@@ -321,6 +326,14 @@ public class Handler {
             drawRecPoint1 = new Point2D.Double(Math.min(point1.getX(), point2.getX()), Math.min(point1.getY(), point2.getY()));
             drawRecPoint2 = new Point2D.Double(Math.max(point1.getX(), point2.getX()), Math.max(point1.getY(), point2.getY()));
         }
+    }
+
+    public boolean isGamePass() {
+        return gamePass;
+    }
+
+    public void setGamePass(boolean gamePass) {
+        this.gamePass = gamePass;
     }
 
     public synchronized void addButton(CustomButton button){

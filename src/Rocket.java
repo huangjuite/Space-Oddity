@@ -24,8 +24,11 @@ public class Rocket extends GameObject {
     private TextField amountField;
     private Point[] estimateLine;
     private Choice destChoice;
-    private GameObject destinationPlanet,startingPlanet;
+    private GameObject destinationPlanet;
     private LinkedList<GameObject> destChoiceList;
+    private boolean gameFinish;
+    private Polygon path;
+    private int completeCount;
 
     public Rocket(int x, int y,int tankSize, ID id,ObjectType type,Handler handler) {
         super(x, y, id,type,handler);
@@ -50,9 +53,11 @@ public class Rocket extends GameObject {
         for(int i=0;i<estimateLine.length;i++){
             estimateLine[i] = new Point();
         }
+        path = new Polygon();
 
         destChoice = new Choice();
-        updateDestChoice();
+        destChoice.add("0:None");
+        destChoice.select(0);
         destLabel = new Label("Destination:");
         tankSizeBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,10000);
         factor = new Choice();
@@ -86,12 +91,7 @@ public class Rocket extends GameObject {
         amountField.setBounds(750,30,70,20);
         tankSizeLabel.setBounds(300,30,50,20);
 
-        handler.getGame().getFrame().add(destChoice,0);
-        handler.getGame().getFrame().add(destLabel,0);
-        handler.getGame().getFrame().add(tankSizeBar,0);
-        handler.getGame().getFrame().add(tankSizeLabel,0);
-        handler.getGame().getFrame().add(factor,0);
-        handler.getGame().getFrame().add(amountField,0);
+        addComponent();
 
         if(handler.getStatus()== Handler.Status.EDIT){
             setComponentsVisible(true);
@@ -140,6 +140,16 @@ public class Rocket extends GameObject {
     }
 
     @Override
+    public void addComponent(){
+        handler.getGame().getFrame().add(destChoice,0);
+        handler.getGame().getFrame().add(destLabel,0);
+        handler.getGame().getFrame().add(tankSizeBar,0);
+        handler.getGame().getFrame().add(tankSizeLabel,0);
+        handler.getGame().getFrame().add(factor,0);
+        handler.getGame().getFrame().add(amountField,0);
+    }
+
+    @Override
     public void setComponentsVisible(boolean b){
         super.setComponentsVisible(false);
         destLabel.setVisible(b);
@@ -150,20 +160,20 @@ public class Rocket extends GameObject {
         tankSizeLabel.setVisible(b);
     }
 
+    public boolean isGameFinish() {
+        return gameFinish;
+    }
+
+    public void setGameFinish(boolean gameFinish) {
+        this.gameFinish = gameFinish;
+    }
+
     public GameObject getDestinationPlanet() {
         return destinationPlanet;
     }
 
     public void setDestinationPlanet(GameObject destinationPlanet) {
         this.destinationPlanet = destinationPlanet;
-    }
-
-    public GameObject getStartingPlanet() {
-        return startingPlanet;
-    }
-
-    public void setStartingPlanet(GameObject startingPlanet) {
-        this.startingPlanet = startingPlanet;
     }
 
     public void updateDestChoice(){
@@ -174,6 +184,7 @@ public class Rocket extends GameObject {
             }
         }
 
+        int index = destChoice.getSelectedIndex();
         destChoice.removeAll();
         destChoice.add("0:None");
         int i=1;
@@ -181,6 +192,7 @@ public class Rocket extends GameObject {
             destChoice.add(i+":"+object.getType().toString());
             i++;
         }
+        destChoice.select(index);
     }
 
     public BufferedImage getRocketImage(){
@@ -215,8 +227,67 @@ public class Rocket extends GameObject {
         return rec;
     }
 
+    public Polygon getTransformedPoly(){
+        int[] ax = path.xpoints;
+        int[] ay = path.ypoints;
+        Polygon polygon = new Polygon();
+        AffineTransform at = handler.getGame().getAt();
+        for(int i=0;i<path.npoints;i++){
+            polygon.addPoint((int)(ax[i]*at.getScaleX()+at.getTranslateX()),
+                    (int)(ay[i]*at.getScaleY()+at.getTranslateY()));
+        }
+        return  polygon;
+    }
+
+    public boolean checkProgress(){
+        Polygon polygon = ((Planet)destinationPlanet).getBoundPolygon(handler.getGame().getAt(),true);
+        Polygon p = getTransformedPoly();
+        for(int i=0;i<polygon.npoints;i++){
+            if(i%(polygon.npoints/20)==0) {
+                if (!p.contains(polygon.xpoints[i], polygon.ypoints[i])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public void tick() {
+        //temp
+        if(handler.objects.size()==2) {
+            destinationPlanet = handler.objects.getLast();
+        }
+        //temp
+
+        if(destinationPlanet!=null && handler.getStatus()== Handler.Status.PLAY){
+            double dis = Math.sqrt(Math.pow(x-destinationPlanet.x,2)+Math.pow(y-destinationPlanet.y,2));
+            Planet planet = (Planet)destinationPlanet;
+            if(dis<planet.getRadius()*planet.getBoundsMargin()){
+                AffineTransform at = handler.getGame().getAt();
+
+                int dx = x;
+                int dy = y;
+                path.addPoint(dx,dy);
+                if(checkProgress()){
+                    if(completeCount<5){
+                        completeCount++;
+                        path.reset();
+                    }
+                    else {
+                        setGameFinish(true);
+                        handler.setGamePass(true);
+                        path.reset();
+                        System.out.println("finish");
+                    }
+                }
+            }
+            else{
+                completeCount = 0;
+                path.reset();
+            }
+        }
+
         x+=volx;
         y+=voly;
         degree+=omega;
@@ -228,11 +299,28 @@ public class Rocket extends GameObject {
 
         if(destinationPlanet!=null){
             AffineTransform nat = new AffineTransform();
-            nat.translate(destinationPlanet.getX()*at.getScaleX()-startPinImage.getWidth()/2,
-                    destinationPlanet.getY()*at.getScaleY()-startPinImage.getHeight()
-                            -(((Planet)destinationPlanet).getRadius()+100)*at.getScaleY());
-            nat.translate(at.getTranslateX(),at.getTranslateY());
-            g2d.drawImage(destPinImage,nat,null);
+            Planet planet = (Planet)destinationPlanet;
+            double dx = planet.getX()*at.getScaleX()-startPinImage.getWidth()/2+at.getTranslateX();
+            double dy = planet.getY()*at.getScaleY()-startPinImage.getHeight()
+                    -(planet.getRadius()+100)*at.getScaleY()+at.getTranslateY();
+            double maxX=handler.getGame().getWidth()-startPinImage.getWidth();
+            double maxY=handler.getGame().getHeight()-startPinImage.getHeight();
+            dx=(dx<0)? 0:dx; dx=(dx>maxX)?maxX:dx;
+            dy=(dy<0)? 0:dy; dy=(dy>maxY)?maxY:dy;
+            nat.translate(dx,dy);
+            double dis = Math.sqrt(Math.pow(x-destinationPlanet.x,2)+Math.pow(y-destinationPlanet.y,2));
+            if(handler.getStatus()== Handler.Status.EDIT ||
+                    (handler.getStatus()== Handler.Status.PLAY &&
+                            dis>(planet.getRadius()*planet.getBoundsMargin()))){
+                g2d.drawImage(destPinImage, nat, null);
+            }
+
+
+            g2d.drawPolygon(getTransformedPoly());
+
+            Polygon polygon = ((Planet)destinationPlanet).getBoundPolygon(handler.getGame().getAt(),true);
+            g2d.drawPolygon(polygon);
+
         }
 
         if(handler.getStatus()==Handler.Status.EDIT){
@@ -280,7 +368,6 @@ public class Rocket extends GameObject {
         }
 
     }
-
 
 
     public void drawHUD(Graphics2D g2d){

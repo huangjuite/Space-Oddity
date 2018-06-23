@@ -97,7 +97,14 @@ public abstract class GameObject {
         label[4].setBounds(200,handler.getGame().getHeight()-45,100,15);
         orbitCenterChoice.setBounds(300,handler.getGame().getHeight()-45,200,15);
 
-        addComponent();
+        for(Label l:label){
+            handler.getGame().getFrame().add(l,0);
+        }
+        handler.getGame().getFrame().add(trackOmegaBar,0);
+        handler.getGame().getFrame().add(trackAbar,0);
+        handler.getGame().getFrame().add(trackBbar,0);
+        handler.getGame().getFrame().add(trackAngleBar,0);
+        handler.getGame().getFrame().add(orbitCenterChoice,0);
 
     }
 
@@ -129,7 +136,8 @@ public abstract class GameObject {
     }
 
     void update(){
-        centerChoiceList = new LinkedList<GameObject>();
+        centerChoiceList = new LinkedList<>();
+        int index = orbitCenterChoice.getSelectedIndex();
         orbitCenterChoice.removeAll();
         orbitCenterChoice.add("0:None");
         int i=1;
@@ -140,6 +148,7 @@ public abstract class GameObject {
                 i++;
             }
         }
+        orbitCenterChoice.select(index);
     }
 
     public void setComponentsVisible(boolean b){
@@ -354,19 +363,6 @@ public abstract class GameObject {
         int py = (int)(at.getTranslateY()+(y-radarRadius)*at.getScaleY());
         int size = (int)(2*radarRadius*at.getScaleX());
         g2d.drawOval(px,py,size,size);
-    }
-
-    public void drawBounds(Graphics2D g2d,AffineTransform at){
-        Rectangle rec = getBounds();
-        int px = (int)(at.getTranslateX()+(x-rec.getWidth()/2-200)*at.getScaleX());
-        int py = (int)(at.getTranslateY()+(y-rec.getHeight()/2-200)*at.getScaleY());
-        Stroke dashed = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                0, new float[]{10}, 0);
-        g2d.setStroke(dashed);
-        g2d.setColor(Color.white);
-        g2d.drawRoundRect(px,py,(int)((rec.getWidth()+400)*at.getScaleX()),
-                (int)((rec.getHeight()+400)*at.getScaleY()),
-                (int)(100*at.getScaleY()),(int)(100*at.getScaleY()));
     }
 
     public abstract Rectangle getBounds();
