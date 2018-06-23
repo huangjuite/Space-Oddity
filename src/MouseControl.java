@@ -250,22 +250,6 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                 lastPoint = e.getPoint();
             }
 
-
-            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==0){
-                //設定公轉軌道
-                for(GameObject objects:handler.objects) {
-                    if(objects.getId()!=ID.Asteroid) {
-                        if(objects.getBounds().contains(point)) {
-
-                        }
-                    }
-                }
-
-                if(deleteObject)
-                {
-                    handler.drawRec(anotherpoint, point);
-                }
-            }
         }
 
     }

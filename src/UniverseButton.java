@@ -71,6 +71,9 @@ public class UniverseButton extends Button implements ActionListener {
                             case "URANUS":
                                 type = GameObject.ObjectType.URANUS;
                                 break;
+                            case "SUN":
+                                type = GameObject.ObjectType.SUN;
+                                break;
                         }
                         planet = new Planet(x, y, ID.Planet, type, handler);
                         loadMap.add(planet);
