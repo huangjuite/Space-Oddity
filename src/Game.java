@@ -59,7 +59,7 @@ public class Game extends Canvas implements Runnable {
         int d = getHeight()/(2+10);
         for(CustomButton.ObjectType type: CustomButton.ObjectType.values()){
             if(type!= GameObject.ObjectType.ROCKET){
-                CustomButton button = new CustomButton(getWidth()/2-70,d*i-getHeight()/2+d,ID.CustomButton,type,handler);
+                CustomButton button = new CustomButton(getWidth()/2-70,25+d*i-getHeight()/2+d,ID.CustomButton,type,handler);
                 System.out.println(type);
                 i++;
                 handler.addButton(button);
