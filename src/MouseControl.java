@@ -255,6 +255,10 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                 game.getAt().translate(dx,dy);
                 lastPoint = e.getPoint();
             }
+
+            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==MouseEvent.BUTTON3 && deleteObject){
+                handler.drawRec(anotherpoint, point);
+            }
         }
 
     }
@@ -272,8 +276,8 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                     else{
                         if(!handler.getDrawingAsteroid()) {
                             button.setHover(false);
-                        }else
-                        {
+                        }
+                        else {
                             button.setHover(true);
                         }
                     }

@@ -34,6 +34,8 @@ public class UniverseButton extends Button implements ActionListener {
     }
 
     public void constructUniverse() {
+        loadMap.removeAll(loadMap);
+        ////
         for (int i = 0; i < data.size(); i++) {
             if (data.get(i) != null) {
                 int x, y, tankSize, count;
@@ -101,6 +103,8 @@ public class UniverseButton extends Button implements ActionListener {
                 }
             }
         }
+
+        ////
         for (int i=0 ; i<loadMap.size() ; i++) {
             double degree, omega, orbitOmega, orbitTrackAngle, orbitAngle, volx, voly;
             if (loadMap.get(i).getId() != ID.Asteroid) {
@@ -135,6 +139,8 @@ public class UniverseButton extends Button implements ActionListener {
             }
             handler.addObject(loadMap.get(i));
         }
+
+        ////
         for(int i=0 ; i<loadMap.size() ; i++)
         {
             if(loadMap.get(i).getId() == ID.Planet)
@@ -147,6 +153,8 @@ public class UniverseButton extends Button implements ActionListener {
                 rt.setDestChoice(Integer.parseInt(data.get(i).get(15)));
             }
         }
+
+        ////
         for(GameObject object : loadMap)
         {
             if(object.getId() == ID.Rocket)

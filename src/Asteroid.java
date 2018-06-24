@@ -26,15 +26,10 @@ public class Asteroid extends GameObject{
     }
     public void addAsteroid(int x, int y)
     {
-        arrayX.add((int)(x- bufferedImage.getWidth() / 2));
-        arrayY.add((int)(y- bufferedImage.getHeight()  / 2));
+        arrayX.add(x);
+        arrayY.add(y);
     }
 
-    public void show()
-    {
-        for(int i = 0 ; i<arrayX.size() ; i++)
-            System.out.println(i+"*"+arrayX.get(i)+"*"+arrayY.get(i));
-    }
     public int getCount(){return arrayX.size();}
     public int getX(){return arrayX.get(arrayX.size()-1);}
     public int getY(){return arrayY.get(arrayY.size()-1);}
@@ -49,6 +44,17 @@ public class Asteroid extends GameObject{
                 i--;
             }
     }
+
+    public boolean detectCollision(Point position){
+        for(int i=0;i<arrayX.size();i++){
+            double dis=Point.distance(position.getX(),position.getY(),arrayX.get(i),arrayY.get(i));
+            if(dis<bufferedImage.getHeight()/2*scale){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void translate(int dx,int dy){
 
@@ -64,7 +70,9 @@ public class Asteroid extends GameObject{
     public void render(Graphics g, AffineTransform at) {
         Graphics2D g2d = (Graphics2D) g;
         for(int i=0 ; i<arrayX.size() ; i++){
-            AffineTransform newAt = AffineTransform.getTranslateInstance(arrayX.get(i) , arrayY.get(i) );
+            AffineTransform newAt = AffineTransform.getTranslateInstance(
+                    arrayX.get(i)-bufferedImage.getWidth()/2,
+                    arrayY.get(i)-bufferedImage.getHeight()/2);
             newAt.preConcatenate(at);
             g2d.drawImage(bufferedImage,newAt, null);
         }

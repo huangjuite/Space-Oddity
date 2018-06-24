@@ -160,6 +160,11 @@ public class Handler {
 
     }
 
+    public void gameFinish(){
+        rocketObject.setPosition(0, 0);
+
+    }
+
     public void tick(){
         for(CustomButton button:buttons){
             button.tick();
@@ -168,11 +173,21 @@ public class Handler {
         for(GameObject tempObject : objects){
             //detect collision
             if(status==Status.PLAY && rocketObject!=null && tempObject!=rocketObject){
-                Planet planet = (Planet)tempObject;
-                if(detectCollision(rocketObject,planet)){
-                    rocketObject.setPosition(0,0);
-                    rocketObject.setGameFinish(true);
-                    setGamePass(false);
+                if(tempObject.getId()== ID.Asteroid){
+                    Asteroid as = (Asteroid)tempObject;
+                    if(as.detectCollision(rocketObject.getPosition())){
+                        rocketObject.setGameFinish(true);
+                        setGamePass(false);
+                        gameFinish();
+                    }
+                }
+                else {
+                    Planet planet = (Planet) tempObject;
+                    if (detectCollision(rocketObject, planet)) {
+                        rocketObject.setGameFinish(true);
+                        setGamePass(false);
+                        gameFinish();
+                    }
                 }
             }
 
@@ -271,7 +286,6 @@ public class Handler {
                 rocketObject.render(g, at);
             }
         }
-
     }
 
     public GameObject getSelectedObject() {
@@ -534,6 +548,10 @@ public class Handler {
             try {
                 FileReader fileReader = new FileReader(logFile.getAbsolutePath());
                 BufferedReader br = new BufferedReader(fileReader);
+                for(UniverseButton b : universeButton)
+                    game.getFrame().remove(b);
+                universeButton.removeAll(universeButton);
+
                 while ((thisLine = br.readLine()) != null)
                 {
                     if (thisLine.contains("$")) {
