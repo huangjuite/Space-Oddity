@@ -8,7 +8,7 @@ public class CustomButton extends GameObject {
 
 
     private double earthSize = 1268;
-    private double planetScale = 0.05;
+    private double planetScale = 0.04;
     private BufferedImage bufferedImage;
     private boolean hover;
     private String buttonName;

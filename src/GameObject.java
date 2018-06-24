@@ -37,7 +37,7 @@ public abstract class GameObject {
         this.id = id;
         this.type = type;
         this.handler = handler;
-        orbitTrack = new Rectangle(x,y,0,0);
+        orbitTrack = new Rectangle(x,y,1,1);
 
         label = new Label[5];
         label[0] = new Label("omega:");
@@ -50,9 +50,9 @@ public abstract class GameObject {
             l.setBackground(Color.gray);
         }
         trackOmegaBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,-200,200);
-        trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,200000);
-        trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,200000);
-        trackAngleBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,0,360);
+        trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,200000);
+        trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,200000);
+        trackAngleBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,360);
         trackAngleBar.setBackground(Color.gray);
         trackOmegaBar.setBackground(Color.gray);
         trackAbar.setBackground(Color.gray);
@@ -367,19 +367,6 @@ public abstract class GameObject {
         int py = (int)(at.getTranslateY()+(y-radarRadius)*at.getScaleY());
         int size = (int)(2*radarRadius*at.getScaleX());
         g2d.drawOval(px,py,size,size);
-    }
-
-    public void drawBounds(Graphics2D g2d,AffineTransform at){
-        Rectangle rec = getBounds();
-        int px = (int)(at.getTranslateX()+(x-rec.getWidth()/2-200)*at.getScaleX());
-        int py = (int)(at.getTranslateY()+(y-rec.getHeight()/2-200)*at.getScaleY());
-        Stroke dashed = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                0, new float[]{10}, 0);
-        g2d.setStroke(dashed);
-        g2d.setColor(Color.white);
-        g2d.drawRoundRect(px,py,(int)((rec.getWidth()+400)*at.getScaleX()),
-                (int)((rec.getHeight()+400)*at.getScaleY()),
-                (int)(100*at.getScaleY()),(int)(100*at.getScaleY()));
     }
 
     public void setOrbitCenterChoice(int x)

@@ -138,7 +138,7 @@ public class Planet extends GameObject {
             int px = (int)(orbitCenterObject.getX()-c*(-Math.cos(Math.toRadians(getOrbitTrackAngle()))));
             int py = (int)(orbitCenterObject.getY()-c*(-Math.sin(Math.toRadians(getOrbitTrackAngle()))));
             setOrbitTrackPosition(px,py);
-            dis = (dis>0)?dis:1e-5;
+            dis = (dis>1)?dis:1;
             omega = orbitOmega*((rec.getWidth()+c)/dis);
         }
         orbitAngle = (orbitAngle+omega)%360;

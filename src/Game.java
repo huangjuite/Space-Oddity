@@ -56,9 +56,9 @@ public class Game extends Canvas implements Runnable {
 
     public void buildEditMode(){
         int i=0;
-        int d = getHeight()/(2+9);
+        int d = getHeight()/(2+10);
         for(CustomButton.ObjectType type: CustomButton.ObjectType.values()){
-            if(type!=GameObject.ObjectType.ASTEROID && type!= GameObject.ObjectType.ROCKET){
+            if(type!= GameObject.ObjectType.ROCKET){
                 CustomButton button = new CustomButton(getWidth()/2-70,d*i-getHeight()/2+d,ID.CustomButton,type,handler);
                 System.out.println(type);
                 i++;
