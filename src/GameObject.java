@@ -149,7 +149,7 @@ public abstract class GameObject {
             }
         }
         orbitCenterChoice.select(index);
-        trackOmegaBar.setValue((int)omega);
+        trackOmegaBar.setValue((int)orbitOmega);
         trackAbar.setValue((int)orbitTrack.getWidth());
         trackBbar.setValue((int)orbitTrack.getHeight());
         trackAngleBar.setValue((int)orbitAngle);

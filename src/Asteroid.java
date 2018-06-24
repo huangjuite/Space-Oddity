@@ -14,7 +14,6 @@ public class Asteroid extends GameObject{
     public Asteroid(int x, int y, ID id, Handler handler)
     {
         super(x, y, id,ObjectType.ASTEROID,handler);
-        System.out.println("new");
         try {
             bufferedImage = ImageIO.read(getClass().getResource("Asteroid.png"));
             bufferedImage = resizeImage(bufferedImage, scale);
@@ -28,12 +27,6 @@ public class Asteroid extends GameObject{
     {
         arrayX.add((int)(x- bufferedImage.getWidth() / 2));
         arrayY.add((int)(y- bufferedImage.getHeight()  / 2));
-    }
-
-    public void show()
-    {
-        for(int i = 0 ; i<arrayX.size() ; i++)
-            System.out.println(i+"*"+arrayX.get(i)+"*"+arrayY.get(i));
     }
     public int getCount(){return arrayX.size();}
     public int getX(){return arrayX.get(arrayX.size()-1);}
@@ -88,8 +81,6 @@ public class Asteroid extends GameObject{
         {
             array+=","+Integer.toString(arrayX.get(i))+","+Integer.toString(arrayY.get(i));
         }
-        System.out.println(arrayX);
-        System.out.println(arrayY);
         return "Asteroid"+","+array;
     }
 }

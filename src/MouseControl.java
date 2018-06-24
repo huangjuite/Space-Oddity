@@ -211,7 +211,7 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
         else{
             boolean dragObject = false;
 
-            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==MouseEvent.BUTTON1){
+            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==0){
 
                 if(tempButton!=null){
                     Point mp = e.getPoint();
@@ -242,13 +242,15 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                 }
             }
 
-            if(!dragObject && e.getButton()==MouseEvent.BUTTON1 && !drawingAsteroid &&
+            if(!dragObject && e.getButton()==0 && !drawingAsteroid &&
                     !deleteObject && tempButton==null){
                 int dx = (int)((e.getX()-lastPoint.getX())/game.getScale());
                 int dy = (int)((e.getY()-lastPoint.getY())/game.getScale());
                 game.getAt().translate(dx,dy);
                 lastPoint = e.getPoint();
             }
+            if(handler.getStatus()==Handler.Status.EDIT && e.getButton()==0&&deleteObject)
+                handler.drawRec(anotherpoint, point);
         }
 
     }

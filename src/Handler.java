@@ -167,7 +167,7 @@ public class Handler {
 
         for(GameObject tempObject : objects){
             //detect collision
-            if(status==Status.PLAY && rocketObject!=null && tempObject!=rocketObject){
+            if(status==Status.PLAY && rocketObject!=null && tempObject!=rocketObject && tempObject.getId()!=ID.Asteroid){
                 Planet planet = (Planet)tempObject;
                 if(detectCollision(rocketObject,planet)){
                     rocketObject.setPosition(0,0);
@@ -534,6 +534,10 @@ public class Handler {
             try {
                 FileReader fileReader = new FileReader(logFile.getAbsolutePath());
                 BufferedReader br = new BufferedReader(fileReader);
+                for(UniverseButton b : universeButton)
+                    game.getFrame().remove(b);
+                while(universeButton.size()!=0)
+                    universeButton.removeLast();
                 while ((thisLine = br.readLine()) != null)
                 {
                     if (thisLine.contains("$")) {

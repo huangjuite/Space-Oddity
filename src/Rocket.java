@@ -33,6 +33,7 @@ public class Rocket extends GameObject {
     public Rocket(int x, int y,int tankSize, ID id,ObjectType type,Handler handler) {
         super(x, y, id,type,handler);
         this.tankSize = tankSize;
+        setFule(this.tankSize);
         destChoiceList = new LinkedList<>();
         rocketImage = new BufferedImage[5];
         try {
@@ -76,7 +77,7 @@ public class Rocket extends GameObject {
         factor.setVisible(false);
         amountField.setVisible(false);
         tankSizeLabel.setVisible(false);
-
+        amountField.setText(Integer.toString(getTankSize()));
         destChoice.setBackground(Color.gray);
         destLabel.setBackground(Color.gray);
         tankSizeBar.setBackground(Color.gray);

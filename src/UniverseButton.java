@@ -34,6 +34,8 @@ public class UniverseButton extends Button implements ActionListener {
     }
 
     public void constructUniverse() {
+        while(loadMap.size()!=0)
+            loadMap.removeLast();
         for (int i = 0; i < data.size(); i++) {
             if (data.get(i) != null) {
                 int x, y, tankSize, count;
