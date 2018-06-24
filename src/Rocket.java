@@ -254,12 +254,6 @@ public class Rocket extends GameObject {
 
     @Override
     public void tick() {
-        //temp
-        if(handler.objects.size()==2) {
-            destinationPlanet = handler.objects.getLast();
-        }
-        //temp
-
         if(destinationPlanet!=null && handler.getStatus()== Handler.Status.PLAY){
             double dis = Math.sqrt(Math.pow(x-destinationPlanet.x,2)+Math.pow(y-destinationPlanet.y,2));
             Planet planet = (Planet)destinationPlanet;

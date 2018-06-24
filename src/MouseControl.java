@@ -69,7 +69,6 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
             e1.printStackTrace();
         }
 
-
         if(handler.getStatus()== Handler.Status.STARTSCENE){
             for(CustomButton button : handler.buttons){
                 tempOrbitOmega = button.getOrbitOmega();
@@ -77,6 +76,23 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
             }
         }else if(handler.getStatus()== Handler.Status.EDIT){
             if(e.getButton()== MouseEvent.BUTTON1) {
+
+                Point mp = e.getPoint();
+                mp.translate(-game.getWidth()/2,-game.getHeight()/2);
+                for(CustomButton button : handler.buttons){
+                    if(button.getBounds().contains(mp)){
+                        if(button.getType()== GameObject.ObjectType.ASTEROID){
+                            handler.setDrawingAsteroid();
+                            System.out.println("asteroid");
+                        }
+                        else {
+                            tempButton = button;
+                            originalButtonPoint = button.getPosition();
+                            break;
+                        }
+                    }
+                }
+
                 //創造小行星
                 if(handler.getDrawingAsteroid()) {
                     //亂數產生座標
@@ -88,16 +104,6 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
                     handler.addObject(asteroid);
                 }
                 else{
-                    Point mp = e.getPoint();
-                    mp.translate(-game.getWidth()/2,-game.getHeight()/2);
-                    for(CustomButton button : handler.buttons){
-                        if(button.getBounds().contains(mp)){
-                            tempButton = button;
-                            originalButtonPoint = button.getPosition();
-                            break;
-                        }
-                    }
-
                     GameObject selectedObject = handler.getSelectedObject();
                     if(selectedObject!=null){
                         selectedObject.setSelected(false);
@@ -259,11 +265,25 @@ public class MouseControl implements MouseListener,MouseMotionListener,MouseWhee
             Point mp = e.getPoint();
             mp.translate(-game.getWidth()/2,-game.getHeight()/2);
             for(CustomButton button : handler.buttons){
-                if(button.getBounds().contains(mp)){
-                    button.setHover(true);
+                if (button.getType()==GameObject.ObjectType.ASTEROID){
+                    if(button.getBounds().contains(mp)) {
+                        button.setHover(true);
+                    }
+                    else{
+                        if(!handler.getDrawingAsteroid()) {
+                            button.setHover(false);
+                        }else
+                        {
+                            button.setHover(true);
+                        }
+                    }
                 }
-                else{
-                    button.setHover(false);
+                else {
+                    if (button.getBounds().contains(mp)) {
+                        button.setHover(true);
+                    } else {
+                        button.setHover(false);
+                    }
                 }
             }
         }

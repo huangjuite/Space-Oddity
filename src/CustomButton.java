@@ -51,6 +51,9 @@ public class CustomButton extends GameObject {
             case SUN:
                 typeName = "sun.png";
                 break;
+            case ASTEROID:
+                typeName = "Asteroid.png";
+                break;
         }
         omega = 0.5;
         try {
@@ -65,6 +68,9 @@ public class CustomButton extends GameObject {
 
     }
 
+    public boolean isHover() {
+        return hover;
+    }
 
     public void setHover(boolean hover) {
         this.hover = hover;

@@ -49,9 +49,9 @@ public abstract class GameObject {
             l.setVisible(false);
             l.setBackground(Color.gray);
         }
-        trackOmegaBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,-200,200);
-        trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,200000);
-        trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,200000);
+        trackOmegaBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,-80,80);
+        trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1, 500000);
+        trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,500000);
         trackAngleBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,360);
         trackAngleBar.setBackground(Color.gray);
         trackOmegaBar.setBackground(Color.gray);
