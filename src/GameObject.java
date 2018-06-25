@@ -40,18 +40,19 @@ public abstract class GameObject {
         orbitTrack = new Rectangle(x,y,1,1);
 
         label = new Label[5];
-        label[0] = new Label("omega:");
-        label[1] = new Label("width:");
-        label[2] = new Label("height");
-        label[3] = new Label("tilt:");
-        label[4] = new Label("orbit center:");
+        label[0] = new Label(" omega:");
+        label[1] = new Label(" width:");
+        label[2] = new Label(" height");
+        label[3] = new Label(" tilt:");
+        label[4] = new Label(" orbit center:");
         for(Label l:label){
             l.setVisible(false);
             l.setBackground(Color.gray);
+            l.setForeground(Color.white);
         }
-        trackOmegaBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,-80,80);
-        trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1, 500000);
-        trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,500000);
+        trackOmegaBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,-50,50);
+        trackAbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1, 200000);
+        trackBbar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,200000);
         trackAngleBar = new Scrollbar(Scrollbar.HORIZONTAL,0,1,1,360);
         trackAngleBar.setBackground(Color.gray);
         trackOmegaBar.setBackground(Color.gray);
@@ -342,8 +343,8 @@ public abstract class GameObject {
                 translatey=at.getTranslateY()+trackRec.getY()*at.getScaleX();
         g2d.rotate(Math.toRadians(trackAngle),translatex,translatey);
         g2d.setColor(Color.white);
-        Stroke dashed = new BasicStroke((float)1.5, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                0, new float[]{(float)1.5,15}, 0);
+        Stroke dashed = new BasicStroke((float)4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                0, new float[]{(float)4,15}, 0);
         g2d.setStroke(dashed);
         g2d.drawArc((int)((-trackRec.getWidth())*at.getScaleX()+translatex),
                 (int)((-trackRec.getHeight())*at.getScaleX()+translatey),

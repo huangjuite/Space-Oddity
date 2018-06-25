@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
 import javax.swing.*;
@@ -12,6 +14,7 @@ public class Game extends Canvas implements Runnable {
     private double scale;
     private AffineTransform at;
     private Window mainWindow;
+    private Timer timer;
 
     public Game(){
         at = new AffineTransform();
@@ -24,7 +27,14 @@ public class Game extends Canvas implements Runnable {
         this.addMouseListener(msc);
         this.addMouseMotionListener(msc);
         this.addMouseWheelListener(msc);
-
+        timer = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                removeAll();
+                buildStartAnimation();
+                timer.stop();
+            }
+        });
         handler.setStatus(Handler.Status.STARTSCENE);
 
         buildStartAnimation();
@@ -33,7 +43,7 @@ public class Game extends Canvas implements Runnable {
     public void removeAll(){
         running = false;
         try {
-            Thread.currentThread().sleep(100);
+            Thread.currentThread().sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -45,6 +55,22 @@ public class Game extends Canvas implements Runnable {
         scale = 1;
 
         System.out.println("delete finish");
+    }
+
+    public void buildGamePassAnimation(){
+        CustomButton button0 = new CustomButton(0,0,ID.CustomButton, CustomButton.ObjectType.SUN,handler);
+        button0.setOrbitTrackAngle(0);
+        handler.addButton(button0);
+        timer.restart();
+        start();
+    }
+
+    public void buildGameFailAnimation(){
+        CustomButton button0 = new CustomButton(0,0,ID.CustomButton, CustomButton.ObjectType.ROCKET,handler);
+        button0.setOrbitTrackAngle(0);
+        handler.addButton(button0);
+        timer.restart();
+        start();
     }
 
     public void buildPlayMode(){
@@ -149,6 +175,7 @@ public class Game extends Canvas implements Runnable {
                 }
                 else{
                     sleepTime--;
+                    sleepTime = (sleepTime>=0)?sleepTime:0;
                 }
                 frames = 0;
             }

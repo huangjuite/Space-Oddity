@@ -80,7 +80,7 @@ public class Handler {
             }
         });
 
-        selectLabel = new Label("select:");
+        selectLabel = new Label(" select:");
         selectLabel.setVisible(false);
         seleItem = new Choice();
         seleItem.addItemListener(new ItemListener() {
@@ -138,15 +138,18 @@ public class Handler {
         saveButton.setBounds(game.getWidth()-200,0,70,70);
         loadButton.setBounds(game.getWidth()-100,0,70,70);
 
-        planetCenter.setBackground(Color.gray);
-        selectUniverseButton.setBackground(Color.gray);
-        homeButton.setBackground(Color.gray);
-        showRadar.setBackground(Color.gray);
-        selectLabel.setBackground(Color.gray);
-        seleItem.setBackground(Color.gray);
-        addNewButton.setBackground(Color.gray);
-        saveButton.setBackground(Color.gray);
-        loadButton.setBackground(Color.gray);
+        planetCenter.setBackground(Color.DARK_GRAY);
+        planetCenter.setForeground(Color.white);
+        selectUniverseButton.setBackground(Color.DARK_GRAY);
+        homeButton.setBackground(Color.DARK_GRAY);
+        showRadar.setBackground(Color.DARK_GRAY);
+        showRadar.setForeground(Color.white);
+        selectLabel.setBackground(Color.DARK_GRAY);
+        selectLabel.setForeground(Color.white);
+        seleItem.setBackground(Color.DARK_GRAY);
+        addNewButton.setBackground(Color.DARK_GRAY);
+        saveButton.setBackground(Color.DARK_GRAY);
+        loadButton.setBackground(Color.DARK_GRAY);
 
         game.getFrame().add(saveButton,0);
         game.getFrame().add(loadButton,0);
@@ -162,10 +165,18 @@ public class Handler {
 
     public void gameFinish(){
         rocketObject.setPosition(0, 0);
+        game.removeAll();
+        setStatus(Status.STARTSCENE);
+        if(gamePass){
+            game.buildGamePassAnimation();
+        }
+        else{
+            game.buildGameFailAnimation();
+        }
 
     }
 
-    public void tick(){
+    public synchronized void tick(){
         for(CustomButton button:buttons){
             button.tick();
         }

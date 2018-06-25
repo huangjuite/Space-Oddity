@@ -80,12 +80,15 @@ public class Rocket extends GameObject {
 
         amountField.setText(Integer.toString(getTankSize()));
 
-        destChoice.setBackground(Color.gray);
-        destLabel.setBackground(Color.gray);
-        tankSizeBar.setBackground(Color.gray);
-        factor.setBackground(Color.gray);
-        amountField.setBackground(Color.white);
-        tankSizeLabel.setBackground(Color.gray);
+        destChoice.setBackground(Color.DARK_GRAY);
+        destLabel.setBackground(Color.DARK_GRAY);
+        tankSizeBar.setBackground(Color.DARK_GRAY);
+        factor.setBackground(Color.DARK_GRAY);
+        amountField.setBackground(Color.DARK_GRAY);
+        amountField.setForeground(Color.white);
+        tankSizeLabel.setBackground(Color.DARK_GRAY);
+        destLabel.setForeground(Color.white);
+        tankSizeLabel.setForeground(Color.white);
 
         destChoice.setBounds(380,50,100,20);
         destLabel.setBounds(300,50,80,20);
@@ -276,6 +279,7 @@ public class Rocket extends GameObject {
                         handler.setGamePass(true);
                         path.reset();
                         System.out.println("finish");
+                        handler.gameFinish();
                     }
                 }
             }
@@ -314,6 +318,9 @@ public class Rocket extends GameObject {
 
 
             if(!gameFinish) {
+                Stroke dashed = new BasicStroke((float)3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                        0, new float[]{(float)3,15}, 0);
+                g2d.setStroke(dashed);
                 g2d.drawPolygon(getTransformedPoly());
             }
 
@@ -356,6 +363,7 @@ public class Rocket extends GameObject {
             g2d.setStroke(new BasicStroke((float)1));
             for(int i=0;i<estimateLine.length;i++){
                 if(i%5==0){
+                    g2d.setStroke(new BasicStroke(2));
                     g2d.drawRect((int)(estimateLine[i].getX()*at.getScaleX()+at.getTranslateX()),
                             (int)(estimateLine[i].getY()*at.getScaleY()+at.getTranslateY()),
                             1,1);

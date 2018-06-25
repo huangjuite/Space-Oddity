@@ -50,14 +50,23 @@ public class CustomButton extends GameObject {
                 break;
             case SUN:
                 typeName = "sun.png";
+                buttonName = "Congratulation";
                 break;
             case ASTEROID:
                 typeName = "Asteroid.png";
                 break;
+            case ROCKET:
+                typeName = "rocket.png";
+                buttonName = "BANG";
+                break;
         }
         omega = 0.5;
         try {
-            bufferedImage = ImageIO.read(getClass().getResource(typeName));
+            if(type==ObjectType.ROCKET){
+                bufferedImage = resizeImage(ImageIO.read(getClass().getResource(typeName)),10);
+            }else {
+                bufferedImage = ImageIO.read(getClass().getResource(typeName));
+            }
         }catch (IOException e){
             e.printStackTrace();
         }
