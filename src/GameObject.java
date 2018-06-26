@@ -343,8 +343,8 @@ public abstract class GameObject {
                 translatey=at.getTranslateY()+trackRec.getY()*at.getScaleX();
         g2d.rotate(Math.toRadians(trackAngle),translatex,translatey);
         g2d.setColor(Color.white);
-        Stroke dashed = new BasicStroke((float)4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                0, new float[]{(float)4,15}, 0);
+        Stroke dashed = new BasicStroke((float)2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                0, new float[]{(float)2,15}, 0);
         g2d.setStroke(dashed);
         g2d.drawArc((int)((-trackRec.getWidth())*at.getScaleX()+translatex),
                 (int)((-trackRec.getHeight())*at.getScaleX()+translatey),

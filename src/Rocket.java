@@ -318,8 +318,8 @@ public class Rocket extends GameObject {
 
 
             if(!gameFinish) {
-                Stroke dashed = new BasicStroke((float)3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                        0, new float[]{(float)3,15}, 0);
+                Stroke dashed = new BasicStroke((float)2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
+                        0, new float[]{(float)2,15}, 0);
                 g2d.setStroke(dashed);
                 g2d.drawPolygon(getTransformedPoly());
             }
